@@ -1,0 +1,10 @@
+node_modules/
+**/dist/
+**/.next/
+**/coverage/
+**/*.tsbuildinfo
+package-lock.json
+reference/
+docs/
+AGENTS.md
+CONTEXT.md

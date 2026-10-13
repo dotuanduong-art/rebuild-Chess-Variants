@@ -1,0 +1,2 @@
+export const AUTH_PROVIDER = Symbol('AUTH_PROVIDER');
+export const RECONNECT_TOKEN_FACTORY = Symbol('RECONNECT_TOKEN_FACTORY');

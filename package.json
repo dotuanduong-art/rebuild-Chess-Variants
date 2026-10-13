@@ -1,0 +1,48 @@
+{
+  "name": "variant-chess",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "npm@11.9.0",
+  "engines": {
+    "node": ">=24.14.0 <25",
+    "npm": ">=11.9.0 <12"
+  },
+  "workspaces": [
+    "packages/shared-types",
+    "packages/game-core",
+    "packages/game-variants",
+    "packages/game-testkit",
+    "apps/backend",
+    "apps/frontend"
+  ],
+  "scripts": {
+    "build:packages": "npm run build --workspace @variant-chess/shared-types --workspace @variant-chess/game-core --workspace @variant-chess/game-variants --workspace @variant-chess/game-testkit",
+    "build": "npm run build:packages && npm run build --workspace @variant-chess/backend --workspace @variant-chess/frontend",
+    "typecheck": "npm run build:packages && npm run typecheck:tooling && npm run typecheck --workspaces",
+    "lint": "eslint . --max-warnings=0 && npm run check:boundaries && npm run format:check",
+    "test": "npm run build:packages && vitest run",
+    "test:watch": "vitest",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "format:check": "prettier --check .",
+    "format": "prettier --write .",
+    "smoke:exports": "node scripts/smoke-exports.mjs",
+    "smoke:runtime": "node scripts/smoke-runtime.mjs",
+    "dev:frontend": "npm run build:packages && npm run dev --workspace @variant-chess/frontend",
+    "dev:backend": "npm run build:packages && npm run build --workspace @variant-chess/backend && npm run dev --workspace @variant-chess/backend",
+    "typecheck:tooling": "tsc -p tsconfig.tooling.json --noEmit",
+    "check:hygiene": "node scripts/check-hygiene.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.4",
+    "eslint-plugin-react-hooks": "7.1.1"
+  }
+}

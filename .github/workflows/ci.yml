@@ -1,0 +1,45 @@
+name: Foundation CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Lint, formatting and architecture boundaries
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Tests
+        run: npm test
+      - name: Build packages and apps
+        run: npm run build
+      - name: ESM and CJS exports
+        run: npm run smoke:exports
+      - name: Backend health and frontend starter
+        run: npm run smoke:runtime
+      - name: Artifact and secret hygiene
+        run: npm run check:hygiene
+      - name: Dependency advisories
+        run: npm audit --audit-level=high
+      - name: Build must not modify tracked source
+        run: git diff --exit-code

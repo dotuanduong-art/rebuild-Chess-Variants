@@ -1,0 +1,32 @@
+{
+  "name": "@variant-chess/game-variants",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/cjs/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/esm/index.d.ts",
+        "default": "./dist/esm/index.js"
+      },
+      "require": {
+        "types": "./dist/cjs/index.d.ts",
+        "default": "./dist/cjs/index.js"
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && tsc -p tsconfig.cjs.json && node ../../scripts/write-cjs-package.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --config ../../vitest.config.ts packages/game-variants/tests"
+  },
+  "dependencies": {
+    "@variant-chess/game-core": "0.0.0",
+    "@variant-chess/shared-types": "0.0.0"
+  }
+}
