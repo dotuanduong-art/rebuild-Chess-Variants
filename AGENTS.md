@@ -9,7 +9,7 @@
 
 ## Phase gate
 
-- Phase 00 đã được chủ dự án review và cho phép Phase 01A: monorepo, tooling, minimal shared contracts, package boundaries, Nest health và Next starter. Chưa cho phép Phase 01B: không movement/AP/turn/effect handlers, Variant cụ thể, board/scene/animation, WebSocket gameplay/auth provider/database/deploy.
+- Phase 01A đã hoàn tất; chủ dự án cho phép duy nhất milestone 01B-1: Board/Piece/coordinates và pure movement trong core/shared-types, unit tests và verification. Không AP, Turn Manager, transaction, concrete Variant/effect handlers, backend/frontend gameplay hoặc dependency mới khi không cần. Chưa cho phép 01B-2 hoặc milestone sau; hoàn tất 01B-1 rồi dừng.
 - Trước chuyển phase, kiểm [IMPLEMENTATION_ROADMAP](docs/rebuild/IMPLEMENTATION_ROADMAP.md), báo deliverables/acceptance/testing và nhận phê duyệt trực tiếp. Scope đã được duyệt không cần hỏi lại cho thao tác thường lệ bên trong phase.
 - Tạo/cập nhật tài liệu mới trong `docs/rebuild/`; ghi câu trả lời mới vào decision registry và spec liên quan trước code/expected. Chỉ sửa legacy khi người dùng thay đổi phạm vi rõ ràng.
 

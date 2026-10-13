@@ -23,6 +23,11 @@ Các câu trả lời trực tiếp ngày2026-10-13 là nguồn xác nhận mớ
 
 Luật Q/O đã resolved trong [06 decisions](../audit/06-decisions.md) không mở lại: mirror; orientation; AP destroy; Time modes; King normal effects/restrictions và non-capture protection; Guardian3/1; Nephalem3; Zombie free3 round; Predator Pawn range; Puppet7=2+5; Ghost second obstacle; Devil repeated sacrifice; Space/Verdant; auth/clocks/disconnect/retention/version. [08 diff](../audit/08-variant-diff.md) có wording mở cũ nhưng phần cuối đã chốt O-7/8/9.
 
+## Quyết định milestone 01B-1 — 2026-10-14
+
+- **B1-01 CONFIRMED:** friendly/enemy capture targets được xác định bằng so sánh controller của attacker và target. Owner/originalSide giữ riêng; Pawn lấy hướng từ controller theo Q-17. Chủ dự án chọn phương án này trực tiếp trong phiên 01B-1.
+- Chủ dự án chỉ cho phép Board/Piece/coordinates/pure movement, tests và verification. Không tự chuyển sang 01B-2; AP/turn/transaction/effects/Variant và backend/frontend gameplay ngoài scope.
+
 ## Decision tree và frontier
 
 Ngày 2026-10-13, chủ dự án đã review Phase 00 và cho phép Phase 01A: monorepo foundation theo prompt hiện tại. Chưa duyệt Phase 01B hoặc gameplay implementation. Các quyết định gameplay P00/Q/O không thay đổi; việc còn mở ở nhóm Variant vẫn giữ gate riêng.

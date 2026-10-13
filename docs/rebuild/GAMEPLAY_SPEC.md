@@ -69,6 +69,8 @@ CONFIRMED P00-06: Pawn tới back rank đối diện thành Queen tự động, 
 
 Authoritative queries phân biệt base destinations, attack/threat squares, legal main actions và skill targets. Full internal legal query và validation dùng cùng rule pipeline; không dựng board từ DTO đã redact để tính full luật. Client preview qua policy projection D-25, chưa được phép gửi hints làm lộ hidden state. Phạm vi threat dưới Ghost/Bind/Stun/Sailing cần D-08. Prediction phía client không được biết trap/stealth/seed ẩn.
 
+CONFIRMED B1-01 (2026-10-14): trong base movement occupancy, friendly/enemy được xác định theo controller của cả attacker và target. Owner/originalSide không đổi do control và không quyết hướng Pawn. Capture candidates chưa đồng nghĩa action legal hoặc threat query.
+
 Nguồn: [movement directory](../../reference/old-project/packages/game-core/src/movement), [MoveGenerator](../../reference/old-project/packages/game-core/src/movement/MoveGenerator.ts), [attack detection](../../reference/old-project/packages/game-core/src/combat/AttackDetection.ts).
 
 ## 5. Kết thúc trận

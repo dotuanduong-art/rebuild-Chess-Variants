@@ -27,6 +27,34 @@ export type PlayerSide = z.infer<typeof PlayerSideSchema>;
 export type Revision = z.infer<typeof RevisionSchema>;
 export type SerializableValue = z.infer<typeof SerializableValueSchema>;
 
+export const BOARD_SIZE = 15 as const;
+export const BOARD_CELL_COUNT = 225 as const;
+export const CoordinateSchema = z
+  .strictObject({
+    file: z.number().int().min(0).max(14),
+    rankIndex: z.number().int().min(0).max(14),
+  })
+  .readonly();
+export type Coordinate = z.infer<typeof CoordinateSchema>;
+
+export const PieceIdSchema = IdentifierSchema.brand<'PieceId'>();
+export const PieceTypeSchema = z.enum(['pawn', 'rook', 'knight', 'bishop', 'queen', 'king']);
+export const PieceSchema = z
+  .strictObject({
+    id: PieceIdSchema,
+    originalSide: PlayerSideSchema,
+    owner: PlayerSideSchema,
+    controller: PlayerSideSchema,
+    baseType: PieceTypeSchema,
+    currentType: PieceTypeSchema,
+    position: CoordinateSchema,
+  })
+  .readonly();
+export type PieceId = z.infer<typeof PieceIdSchema>;
+export type PieceType = z.infer<typeof PieceTypeSchema>;
+export type Piece = z.infer<typeof PieceSchema>;
+export type PieceInput = z.input<typeof PieceSchema>;
+
 const MessageSchema = z.strictObject({
   kind: z
     .string()
