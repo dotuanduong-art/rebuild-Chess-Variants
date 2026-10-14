@@ -1,0 +1,8 @@
+# Keep rebuild text files consistent with Prettier on every checkout.
+/* text=auto eol=lf
+/.github/** text=auto eol=lf
+/apps/** text=auto eol=lf
+/packages/** text=auto eol=lf
+/scripts/** text=auto eol=lf
+/tests/** text=auto eol=lf
+/docs/rebuild/** text=auto eol=lf
