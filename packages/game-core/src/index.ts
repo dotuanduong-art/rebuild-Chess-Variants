@@ -2,6 +2,27 @@ import { CONTRACT_SCHEMA_VERSION } from '@variant-chess/shared-types';
 
 export const CORE_API_VERSION = CONTRACT_SCHEMA_VERSION;
 
+export { createAPState, debitAP, awardPromotionAP, getPieceAPValue, settleDeathAP } from './ap.js';
+export type { APState, APRejection, APResult, DeathOutcome } from './ap.js';
+
+export {
+  createBasePosition,
+  endBaseTurn,
+  applyBaseMainMove,
+  applyBaseDestruction,
+  commitNormalSkillUsage,
+  NORMAL_TURN_POLICY,
+} from './base-game.js';
+export type {
+  BasePosition,
+  BaseTerminal,
+  TurnState,
+  TurnBoundary,
+  TurnPolicy,
+  BaseOperationResult,
+  BaseRejection,
+} from './base-game.js';
+
 export {
   isInBounds,
   coordinateToIndex,

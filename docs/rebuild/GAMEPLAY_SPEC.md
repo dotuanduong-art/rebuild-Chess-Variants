@@ -1,6 +1,6 @@
 # GAMEPLAY_SPEC — Phase 00
 
-Ngày: 2026-10-13 (Asia/Saigon). Phase 00 đã được chủ dự án review; Phase 01A foundation được phép theo prompt mới. Chưa cho phép Phase 01B hoặc gameplay implementation. Phần đề xuất kỹ thuật không tự trở thành luật gameplay.
+Ngày spec gốc: 2026-10-13 (Asia/Saigon). Phase 00 đã được review; 01A và 01B-1 đã hoàn tất. Chủ dự án cho phép riêng 01B-2 theo yêu cầu hiện tại, chưa cho phép 01B-3. Phần đề xuất kỹ thuật không tự trở thành luật gameplay.
 
 ## 1. Cách đọc và thẩm quyền
 
@@ -85,7 +85,7 @@ Threefold CONFIRMED Q-07/P00-10: tự hòa ở occurrence thứ ba, không cần
 
 CONFIRMED B-03/P00-06/P00-12: bắt đầu 0; không cap/decay; AP riêng từng bên; King reward0. Quiet move cơ bản không tốn AP; cost modifier như Devil Toll là ngoại lệ.
 
-| Quân | Capture AP | Loss AP |
+| Quân | Capture AP Reward | Piece Loss AP Reward (cộng cho owner) |
 |---|---:|---:|
 | Pawn | 2 | 1 |
 | Knight | 3 | 2 |
@@ -97,6 +97,8 @@ CONFIRMED B-03/P00-06/P00-12: bắt đầu 0; không cap/decay; AP riêng từng
 Nguồn [GDD STEP 2](../GDD.md), [ActionPipeline](../../reference/old-project/packages/game-core/src/action/ActionPipeline.ts), `CAPTURE_AP/LOSS_AP/PROMOTION_AP`.
 
 CONFIRMED Q-14/P00-05: destruction trả loss AP cho owner hiện tại; bên gây destroy không nhận capture AP. Capture/promotion AP thuộc controller thực hiện; loss AP thuộc owner. Control không đổi owner; conversion đổi owner rõ ràng. Passive được thưởng thêm chỉ khi spec riêng được duyệt; không ngầm kế thừa ngoại lệ Shelter trả capture AP khi destroy.
+
+CONFIRMED B2-01: Piece Loss AP Reward/Loss AP Gain luôn **cộng**, không trừ AP. Đây là clarification P00-06, không đổi luật gameplay. Chỉ reward sau death/destruction được commit hợp lệ theo P00-08; candidate/canceled capture không reward. Capture King không thưởng AP. Despawn, exile và transformation không tự là death; nguyên nhân chưa được duyệt giữ pending. Pirate negative AP/debt chưa được bật trong baseline.
 
 CONFIRMED Q-15: Devil sacrifice có thể lặp đến đủ AP rồi vẫn main move; [roadmap G2.6a](../audit/07-roadmap-final.md) áp Toll cho quiet move/capture/bite. Bảng phí và sacrifice reward cụ thể vẫn ứng viên theo catalog. Pirate nợ đến −10, dynamic cost Phoenix/Puppet/Wizard/Earth là LEGACY chờ duyệt. Mọi skill quote một `actualCost` gồm base + surcharge − discount; validate AP trước; debit một lần trong transaction; không clamp âm để che thiếu AP; invalid action không tốn AP/RNG/slot.
 

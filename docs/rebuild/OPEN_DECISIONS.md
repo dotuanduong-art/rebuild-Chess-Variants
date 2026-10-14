@@ -28,6 +28,12 @@ Luật Q/O đã resolved trong [06 decisions](../audit/06-decisions.md) không m
 - **B1-01 CONFIRMED:** friendly/enemy capture targets được xác định bằng so sánh controller của attacker và target. Owner/originalSide giữ riêng; Pawn lấy hướng từ controller theo Q-17. Chủ dự án chọn phương án này trực tiếp trong phiên 01B-1.
 - Chủ dự án chỉ cho phép Board/Piece/coordinates/pure movement, tests và verification. Không tự chuyển sang 01B-2; AP/turn/transaction/effects/Variant và backend/frontend gameplay ngoài scope.
 
+## Clarification milestone 01B-2 — P00-06 giữ nguyên
+
+- **B2-01 CONFIRMED:** chủ dự án xác nhận Piece Loss AP Reward/Loss AP Gain là khoản **cộng** cho owner hiện tại: Pawn +1, Knight/Bishop +2, Rook +3, Queen +4, King +0. Capture reward thuộc controller của attacker; capture King không thưởng AP cho bất kỳ bên nào. Đây là clarification P00-06, **không đổi luật gameplay**.
+- Theo P00-08, chỉ settle reward sau committed death/destruction; candidate hoặc canceled capture không có reward. Despawn/exile/transformation không tự được coi là death; các removal causes chưa approved giữ pending.
+- Chủ dự án duyệt duy nhất 01B-2 (AP/normal turn/King terminal/Queen promotion, pure domain operations/tests/verification), giữ contracts 01B-1, không bắt đầu 01B-3. Negative AP/Pirate debt vẫn chưa approved cho baseline.
+
 ## Decision tree và frontier
 
 Ngày 2026-10-13, chủ dự án đã review Phase 00 và cho phép Phase 01A: monorepo foundation theo prompt hiện tại. Chưa duyệt Phase 01B hoặc gameplay implementation. Các quyết định gameplay P00/Q/O không thay đổi; việc còn mở ở nhóm Variant vẫn giữ gate riêng.

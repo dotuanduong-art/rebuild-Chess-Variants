@@ -9,7 +9,7 @@
 
 ## Phase gate
 
-- Phase 01A đã hoàn tất; chủ dự án cho phép duy nhất milestone 01B-1: Board/Piece/coordinates và pure movement trong core/shared-types, unit tests và verification. Không AP, Turn Manager, transaction, concrete Variant/effect handlers, backend/frontend gameplay hoặc dependency mới khi không cần. Chưa cho phép 01B-2 hoặc milestone sau; hoàn tất 01B-1 rồi dừng.
+- Chủ dự án đã cho phép riêng milestone 01B-2: AP, normal turn, King-capture terminal và Queen promotion qua domain operations thuần, tests và verification. Giữ contracts 01B-1/B1-01/Q-17. Hoàn tất 01B-2 rồi dừng; transaction reducer thuộc 01B-3, effects/Variants/network/storage/UI ngoài phạm vi.
 - Trước chuyển phase, kiểm [IMPLEMENTATION_ROADMAP](docs/rebuild/IMPLEMENTATION_ROADMAP.md), báo deliverables/acceptance/testing và nhận phê duyệt trực tiếp. Scope đã được duyệt không cần hỏi lại cho thao tác thường lệ bên trong phase.
 - Tạo/cập nhật tài liệu mới trong `docs/rebuild/`; ghi câu trả lời mới vào decision registry và spec liên quan trước code/expected. Chỉ sửa legacy khi người dùng thay đổi phạm vi rõ ràng.
 
