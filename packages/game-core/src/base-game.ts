@@ -39,6 +39,7 @@ export type BaseTerminal =
   | { readonly status: 'ongoing' }
   | { readonly status: 'won'; readonly reason: 'king_captured'; readonly winner: PlayerSide };
 export type BaseRejection =
+  | 'USE_ROOT_TRANSACTION'
   | APRejection
   | 'TERMINAL'
   | 'WRONG_TURN'
@@ -104,6 +105,7 @@ function nextTurn(position: BasePosition): BaseOperationResult {
 }
 
 export function endBaseTurn(position: BasePosition, actor: PlayerSide): BaseOperationResult {
+  if (Object.hasOwn(position, 'matchId')) return { ok: false, code: 'USE_ROOT_TRANSACTION' };
   if (position.terminal.status !== 'ongoing') return { ok: false, code: 'TERMINAL' };
   if (position.turn.sideToAct !== actor) return { ok: false, code: 'WRONG_TURN' };
   if (
@@ -123,6 +125,7 @@ export function applyBaseMainMove(
   pieceId: PieceId,
   to: Coordinate,
 ): BaseOperationResult {
+  if (Object.hasOwn(position, 'matchId')) return { ok: false, code: 'USE_ROOT_TRANSACTION' };
   if (position.terminal.status !== 'ongoing') return { ok: false, code: 'TERMINAL' };
   if (position.turn.sideToAct !== actor) return { ok: false, code: 'WRONG_TURN' };
   if (!NORMAL_TURN_POLICY.canUseMainMove(position.turn))
@@ -192,6 +195,7 @@ export function applyBaseDestruction(
   position: BasePosition,
   pieceId: PieceId,
 ): BaseOperationResult {
+  if (Object.hasOwn(position, 'matchId')) return { ok: false, code: 'USE_ROOT_TRANSACTION' };
   if (position.terminal.status !== 'ongoing') return { ok: false, code: 'TERMINAL' };
   const victim = getPiece(position.board, pieceId);
   if (!victim) return { ok: false, code: 'PIECE_NOT_FOUND' };
@@ -214,6 +218,7 @@ export function commitNormalSkillUsage(
   actor: PlayerSide,
   actualCost: number,
 ): BaseOperationResult {
+  if (Object.hasOwn(position, 'matchId')) return { ok: false, code: 'USE_ROOT_TRANSACTION' };
   if (position.terminal.status !== 'ongoing') return { ok: false, code: 'TERMINAL' };
   if (position.turn.sideToAct !== actor) return { ok: false, code: 'WRONG_TURN' };
   if (!NORMAL_TURN_POLICY.canUseSkill(position.turn)) return { ok: false, code: 'SKILL_USED' };

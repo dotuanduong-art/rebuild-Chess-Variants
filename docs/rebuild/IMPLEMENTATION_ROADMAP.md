@@ -1,6 +1,6 @@
 # IMPLEMENTATION_ROADMAP — clean rebuild theo gate
 
-Ngày 2026-10-13. Phase 00 đã được review và Phase 01A monorepo foundation được phép; chưa cho phép Phase 01B. Kế hoạch các phase sau vẫn qua gate riêng. [Roadmap legacy](../audit/07-roadmap-final.md) cung cấp mapping requirements và gates; không migrate source hoặc kế thừa trạng thái HOÀN THÀNH. [OPEN_DECISIONS](OPEN_DECISIONS.md) ghi phê duyệt gameplay/phase.
+Ngày spec gốc 2026-10-13; cập nhật implementation 2026-10-14: 01A và toàn 01B đã hoàn tất verification, kết luận [READY_WITH_CONDITIONS](PHASE_01B_REPORT.md) cho Phase 02. Phase 02 chưa được bắt đầu; các phase sau vẫn qua gate riêng. [Roadmap legacy](../audit/07-roadmap-final.md) cung cấp mapping requirements và gates; không migrate source hoặc kế thừa trạng thái HOÀN THÀNH. [OPEN_DECISIONS](OPEN_DECISIONS.md) ghi phê duyệt gameplay/phase.
 
 ## 1. Dependency path
 

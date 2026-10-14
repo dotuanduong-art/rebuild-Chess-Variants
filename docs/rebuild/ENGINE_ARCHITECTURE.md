@@ -1,6 +1,6 @@
 # ENGINE_ARCHITECTURE — pure deterministic core
 
-Ngày 2026-10-13. Kiến trúc Phase 00 đã được review và cho phép triển khai nền tảng Phase 01A; ràng buộc đã xác nhận dẫn từ [gameplay](GAMEPLAY_SPEC.md). Engine gameplay vẫn chờ Phase 01B. Các quyết định nhóm Variant chưa duyệt không được enable.
+Ngày spec gốc 2026-10-13. Phase 01B đã được chủ dự án cho phép triển khai; API thực tế và các giới hạn tại [Phase 01B report](PHASE_01B_REPORT.md). Ràng buộc đã xác nhận dẫn từ [gameplay](GAMEPLAY_SPEC.md). Các quyết định nhóm Variant chưa duyệt không được enable; không tự bắt đầu Phase 02.
 
 ## 1. Ranh giới monorepo
 

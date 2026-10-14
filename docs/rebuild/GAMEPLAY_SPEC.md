@@ -1,6 +1,6 @@
 # GAMEPLAY_SPEC — Phase 00
 
-Ngày spec gốc: 2026-10-13 (Asia/Saigon). Phase 00 đã được review; 01A và 01B-1 đã hoàn tất. Chủ dự án cho phép riêng 01B-2 theo yêu cầu hiện tại, chưa cho phép 01B-3. Phần đề xuất kỹ thuật không tự trở thành luật gameplay.
+Ngày spec gốc: 2026-10-13 (Asia/Saigon). Phase 00 đã được review; chủ dự án đã cho phép hoàn thành 01B-3/4/5 sau 01A/01B-1/2. Không tự bắt đầu Phase 02. Kết quả implementation và giới hạn tại [Phase 01B report](PHASE_01B_REPORT.md). Phần đề xuất kỹ thuật không tự trở thành luật gameplay.
 
 ## 1. Cách đọc và thẩm quyền
 

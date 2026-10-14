@@ -34,6 +34,14 @@ Luật Q/O đã resolved trong [06 decisions](../audit/06-decisions.md) không m
 - Theo P00-08, chỉ settle reward sau committed death/destruction; candidate hoặc canceled capture không có reward. Despawn/exile/transformation không tự được coi là death; các removal causes chưa approved giữ pending.
 - Chủ dự án duyệt duy nhất 01B-2 (AP/normal turn/King terminal/Queen promotion, pure domain operations/tests/verification), giữ contracts 01B-1, không bắt đầu 01B-3. Negative AP/Pirate debt vẫn chưa approved cho baseline.
 
+## Phê duyệt hoàn thành 01B — milestones 3/4/5
+
+Chủ dự án đã cho phép triển khai liên tiếp 01B-3 → 01B-4 → 01B-5, chuyển bước khi acceptance pass và report đã ghi. Giữ mọi luật CONFIRMED; không concrete Variant/full Effect Engine/network/storage/UI, không bắt đầu Phase 02, không commit/push. Đây là cập nhật scope/gate, không phê duyệt các quyết định gameplay còn UNKNOWN. Kết quả cuối xem [Phase 01B report](PHASE_01B_REPORT.md).
+
+## Phê duyệt Phase 02A-1 — 2026-10-14
+
+Chủ dự án cho phép **Effect Data Foundation**: typed definition/instance contracts, versioned payload validation, immutable deterministic registry scoped theo RulesetBundle, source/target/lifetime/group/policy metadata và codec integration tối thiểu. Không concrete effects, scheduler, triggers, stacking/relocation operations hoặc thay đổi transaction pipeline; giữ `UNSUPPORTED_RUNTIME`. D-04/05/06/08 và các group approvals vẫn pending. Hoàn thành verification/report thì dừng, không tự bắt đầu 02A-2/02B; không commit/push. Đây là phê duyệt scope kỹ thuật, không thêm luật gameplay.
+
 ## Decision tree và frontier
 
 Ngày 2026-10-13, chủ dự án đã review Phase 00 và cho phép Phase 01A: monorepo foundation theo prompt hiện tại. Chưa duyệt Phase 01B hoặc gameplay implementation. Các quyết định gameplay P00/Q/O không thay đổi; việc còn mở ở nhóm Variant vẫn giữ gate riêng.
