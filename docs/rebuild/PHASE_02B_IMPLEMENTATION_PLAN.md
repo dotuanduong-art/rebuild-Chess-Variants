@@ -1,6 +1,14 @@
 # Phase 02B — implementation gate sau Batch A rules freeze
 
-## Current checkpoint status — accepted 02B-5C/5D
+## Current work order — Phase 02B-6 Live Charge only
+
+Owner explicitly approves the six scoped Dynamite answers in OPEN_DECISIONS §02B-6; documentation is recorded before implementation. Sequence: red/green real root cast + separate pinned Live Charge-only factory → producer duplicate/target/source/permanent registration validation → death/relocation/cross-effect/rollback/codec/repetition/replay tests → exported-API AP0 funding/cast/blast acceptance → independent Standards/Spec reviews + full verification → PHASE_02B_6_LIVE_CHARGE_REPORT and stop. Preserve Holy Shield factory/behavior and generic family duplicate-ignore. No shared planner framework or core transaction redesign is required unless a reproduced defect demands it.
+
+Live Charge gameplay is APPROVED; producer now IMPLEMENTED / READY / ENABLED only for selected players through createLiveChargeExperimentalRuleset, pinned profile dynamite.live-charge-only.experimental v1.0.0. Engine0.6.0/state1.1.0 retained;58 focused tests and root611/33 PASS. Required engine verification passed; runtime HTTP smoke environment-blocked EACCES leaves overall02B-6 READY_WITH_CONDITIONS, documented in [report](PHASE_02B_6_LIVE_CHARGE_REPORT.md). Standards1 harness issue fixed via red/green; Spec0. Full Dynamite, Landmine, Detonation/passive/setup/refund, all other unapproved producers, non-null caster/incarnation and unknown interactions stay NOT_READY/gated. No dependencies, apps, networking, commit/push or automatic next phase.
+
+Next safe step toward local3D: owner review and separate authorization of a bounded presentation slice using public intents/events and explicit trusted profile selection/composition requirements. No UI, mixed-profile factory, full Variant or Phase03 work begins automatically. Stop after02B-6 report.
+
+## Historical checkpoint status — accepted 02B-5C/5D
 
 Experimental Guardian Holy Shield-only is READY / ENABLED exclusively for explicitly selected players through the pinned `createHolyShieldExperimentalRuleset` factory (`guardian.holy-shield-only.experimental` v1). [5C acceptance](PHASE_02B_5C_REPORT.md) implemented the real producer; [5D acceptance](PHASE_02B_5D_REPORT.md) verified its exported-API workflow. Current pins are engine0.6.0/state1.1.0, with553 tests/30 files accepted at5D. This checkpoint task authorizes only documentation corrections, verification and scoped staging; no commit/push or new gameplay milestone.
 

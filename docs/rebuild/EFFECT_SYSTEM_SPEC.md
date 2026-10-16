@@ -1,6 +1,14 @@
 # EFFECT_SYSTEM_SPEC — generic effect engine
 
-## Current implementation authorization — 02B-5C
+## Current implementation authorization — 02B-6 Live Charge only
+
+The owner approves a separate experimental Dynamite Live Charge-only producer. Cast one live invoking-player-controlled ordinary-original non-King piece for fixed3 AP/one normal skill slot; no other Dynamite ability/passive/setup attachment/refund. Any active Bomb family makes the producer cast invalid before debit. Generic family unique-target-ignore remains unchanged.
+
+Complete Charge registration reuses the existing BUFF/public/unlinked/piece/permanent/source-player Bomb consumer, empty immutable payload, committed capture/destruction reaction and 3×3 non-King FIFO blast. Required player-originated-v1 source is invoking player/dynamite/dynamite.live_charge/null/null. No duration parameter or deadline. Eligible ordinary-original non-King relocation may cross controllers and preserves original identity/source/payload/lifetime; control transfer does not remove the attachment. Only bearer-death/terminal cleanup permitted; terminal cleanup never reacts. No cleanse/dispel/consume/replace/source invalidation, Mine producer, special unit or new death cause is approved. Exact producer-scoped decisions are in OPEN_DECISIONS §02B-6; acceptance/enablement remain separate from gameplay approval.
+
+Implemented and functionally accepted: selected players in `createLiveChargeExperimentalRuleset` alone may invoke the complete producer. Holy Shield's separate factory/hash is preserved. Engine0.6.0/state1.1.0 contracts unchanged;611 tests/33 files PASS, source-bearing public replay/restore verified. Overall READY_WITH_CONDITIONS: runtime HTTP smoke environment-blocked EACCES, all other required checks PASS; see [02B-6 report](PHASE_02B_6_LIVE_CHARGE_REPORT.md). Other producers/profiles/interactions remain gated.
+
+## Historical implementation authorization — 02B-5C
 
 Owner authorizes only experimental Guardian Holy Shield under the six signed rules below. Real root execution must validate actor/profile and versioned one-piece intent, controlled ordinary-original target (King allowed), then debit fixed4 and one skill slot once, applying trusted N2/null-source Shield. Cast allegiance is not continuing eligibility; eligible ordinary-original either-controller relocation is supported. Natural expiry/bearer death/terminal cleanup only; explicit removal must fail closed. Existing consumer/source/refresh/projector/defense paths are reused. No other Guardian ability or producer is enabled by this authorization. Implementation/versions/verification and actual enablement are recorded at acceptance in PHASE_02B_5C_REPORT.
 

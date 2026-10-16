@@ -2,6 +2,23 @@
 
 Ngày 2026-10-13. Chủ dự án quyết gameplay; architect tìm bằng chứng và đưa phương án. Recommendation chưa được trả lời **không phải** luật. Spec/architecture viết xong không tự duyệt Phase 01. Các decision IDs stable để fixtures/PR tương lai truy vết.
 
+## Phase 02B-6 — Live Charge-only owner approvals (2026-10-16)
+
+Owner explicitly authorizes documentation-first implementation and verification of one real experimental Live Charge producer. These six answers are **APPROVED only for Live Charge**; Guardian answers below remain intact. At authorization, implementation/enablement were pending acceptance, not inferred from approval. Parent D-04/05/06/08/12/22 remain OPEN/PARTIALLY_APPROVED outside signed subsets. No commit/push or automatic next milestone.
+
+| Decision ID / producer subset | APPROVED answer |
+|---|---|
+| D-22.FIRST_PRODUCER.SCOPE / Dynamite | Explicit experimental Dynamite Live Charge-only profile; no other skill, passive, Landmine, Detonation/refund, setup bonus or initial Bomb |
+| D-22.DYNAMITE.LIVE_CHARGE.PROFILE / targets | Exactly one live actor-controlled ordinary-original supported Pawn/Knight/Bishop/Rook/Queen; King, special/summoned/unknown origin excluded. Relocation permits eligible ordinary-original non-King destinations of either controller, preserving ID/source/payload/permanent lifetime; cast allegiance is not continuing validity |
+| D-22.DYNAMITE.LIVE_CHARGE.PROFILE / cost | Fixed3 AP, charged once by root on successful skill commit; no discount, alternative cost, attachment reward, passive or refund |
+| D-22.DYNAMITE.LIVE_CHARGE.PROFILE / duplicate cast | Any active Bomb family on target rejects the producer cast before AP/slot debit, preserving all existing data. Generic family application retains duplicate-ignore; never a paid no-op |
+| D-05.FIRST_PRODUCER.SOURCE_PROFILE / Live Charge | Player-originated-v1: invoking player, exact dynamite/dynamite.live_charge, canonical null sourcePiece/null sourceIncarnation. No caster generator; original attribution stable through control/relocation/death/chains |
+| D-06.FIRST_PRODUCER.REMOVAL_PROFILE / Live Charge | Permanent, no N/deadline; bearer committed-death and terminal cleanup only. No cleanse/dispel/source-invalidated/consume/replace/other removal. Committed capture/destruction still explodes; terminal cleanup never explodes |
+
+Separate pins/authorization, trusted piece-target-v1 planning, reviewed Bomb registration, real exported-API acceptance, rollback/codec/replay and Standards/Spec reviews are technical acceptance gates. No Mine producer, hidden state, new priority matrix, source graph normalization, full Dynamite or Phase03 is authorized.
+
+**02B-6 delivery:** Live Charge IMPLEMENTED / READY / ENABLED only for selected players through `createLiveChargeExperimentalRuleset`, profile `dynamite.live-charge-only.experimental` v1.0.0. Existing Holy Shield factory remains unchanged. Engine0.6.0/state1.1.0 retained; root611 tests/33 files PASS (+58), required engine checks PASS. Milestone **READY_WITH_CONDITIONS** solely because `smoke:runtime` HTTP loopback is environment-blocked EACCES, not claimed PASS. Standards1 harness finding fixed with red/green regression; Spec0. No new gameplay approval or parent closure implied. Evidence: [02B-6 report](PHASE_02B_6_LIVE_CHARGE_REPORT.md).
+
 ## Phase 02B-5C — implementation authorization (2026-10-16)
 
 Owner authorizes only the real experimental Guardian Holy Shield producer, using the six approved answers below unchanged. Implement authoritative player/profile binding, versioned single-piece target intent, pure trusted planner, fixed4 AP/one skill slot, complete Shield registration and focused/root/replay/security acceptance. Ordinary-original provenance must be explicit; unknown/special/summoned units fail closed. Public seams are root commands, pinned ruleset/plugin, queries, effect records and snapshot/repetition/replay. No full Guardian, other abilities, transport or subsequent milestone. No commit/push. At authorization time enablement was pending; the acceptance entry below records the final implementation status and exact pins. Parent decisions remain open for unrelated producers/interactions. No new gameplay approval recorded.

@@ -7,3 +7,7 @@ export {
   createHolyShieldExperimentalRuleset,
   HOLY_SHIELD_EXPERIMENTAL_PROFILE,
 } from './holy-shield.js';
+export {
+  createLiveChargeExperimentalRuleset,
+  LIVE_CHARGE_EXPERIMENTAL_PROFILE,
+} from './live-charge.js';

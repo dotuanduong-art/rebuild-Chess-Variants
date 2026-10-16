@@ -1,6 +1,12 @@
 # Phase 02B Batch A — Approved Manifest
 
-## Current status overlay — Phase 02B-5C PASS (2026-10-16)
+## Current authorization overlay — Phase 02B-6 (2026-10-16)
+
+**Live Charge gameplay APPROVED / producer IMPLEMENTED / READY / ENABLED only in the explicitly selected experimental factory.** Six producer-specific answers: explicit Dynamite Live Charge-only experimental profile/no passive/setup/refund/other skill; cast one live controlled ordinary-original non-King/no unsupported provenance; fixed3 AP/one skill slot; any existing Bomb family rejects producer cast before debit while generic application stays ignore; player-originated dynamite/dynamite.live_charge/null/null; permanent/death+terminal cleanup only/no other removal or N. Relocation accepts eligible ordinary-original non-King of either controller without changing source/ID/payload/lifetime. Existing committed capture/destruction blast and original-source FIFO/AP/King rules remain unchanged. Decision provenance: OPEN_DECISIONS §02B-6. No Mine producer or full Dynamite authorization. Holy Shield remains accepted/enabled in its existing pinned factory.
+
+**Actual02B-6 acceptance:** createLiveChargeExperimentalRuleset/profile dynamite.live-charge-only.experimental v1.0.0, engine0.6.0/state1.1.0 unchanged;611 tests/33 files PASS (+58). Public AP0 workflow, independent source chains, exact rollback/restore/replay passed. Required engine checks PASS; overall READY_WITH_CONDITIONS because runtime HTTP smoke is environment-blocked EACCES, not PASS. Standards1 harness finding fixed; Spec0. Full evidence/limits: [02B-6 report](PHASE_02B_6_LIVE_CHARGE_REPORT.md). Other producer/interaction gates remain closed to execution.
+
+## Historical status overlay — Phase 02B-5C PASS (2026-10-16)
 
 Owner authorizes real Holy Shield only in an explicitly pinned experimental Guardian profile. Six signed gameplay decisions below are unchanged. Actor/profile binding, target planner, fixed4 debit, one skill slot, ordinary-original provenance/King and removal eligibility must pass real-command acceptance before ENABLED=true. Other producers remain disabled. No full Guardian/other skills/next milestone or commit/push. Historical5B restriction below applies to that completed milestone, not this separate authorization.
 

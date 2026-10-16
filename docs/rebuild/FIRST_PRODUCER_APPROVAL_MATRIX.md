@@ -1,6 +1,24 @@
 # First concrete producers — approval matrix (02B-5A)
 
-## Current 02B-5C implementation authorization
+## Current 02B-6 Live Charge approval overlay
+
+Owner approves the six Live Charge-only answers in OPEN_DECISIONS §02B-6 and authorizes this bounded implementation. They supersede UNKNOWN/PROPOSED Live Charge fields in the historical §4 table below, and only the Live Charge branch of shared Q-SCOPE/Q-SOURCE/Q-REMOVAL. Guardian answers remain unchanged; Landmine/Sanctuary/full Variants remain NOT_READY. Gameplay APPROVED; producer now IMPLEMENTED / READY / ENABLED only for explicitly selected factory players. Overall milestone READY_WITH_CONDITIONS: runtime HTTP smoke EACCES; all engine checks/611 tests PASS. Evidence: [02B-6 report](PHASE_02B_6_LIVE_CHARGE_REPORT.md).
+
+| Field | Current approved Live Charge value / provenance |
+|---|---|
+| Variant / skill / scope | dynamite / dynamite.live_charge; experimental one-skill-only; D-22.FIRST_PRODUCER.SCOPE / Dynamite |
+| Definition / category / payload | effect.bomb.charge / BUFF / existing empty immutable schema; Batch A consumer unchanged |
+| Source / required refs | Invoking player, exact dynamite/dynamite.live_charge/null/null; player-originated-v1; D-05.FIRST_PRODUCER.SOURCE_PROFILE / Live Charge |
+| Target / King / units | One live currently actor-controlled ordinary-original supported non-King; no special/summoned/unknown provenance; D-22.DYNAMITE.LIVE_CHARGE.PROFILE / targets |
+| Lifetime / boundary / refresh | Permanent; no N/deadline; family application ignore/no refresh; prior Batch A |
+| Cast duplicate / preconditions | Correct profile/turn/slot/AP3, valid target without any active Bomb family; duplicate cast rejects before debit; D-22.DYNAMITE.LIVE_CHARGE.PROFILE / duplicate cast |
+| Cost / typed plan | Fixed3 AP, root debit once/one skill slot; pure plan one effect_apply; D-22.DYNAMITE.LIVE_CHARGE.PROFILE / cost |
+| Removal / invalidation | Bearer committed-death and terminal cleanup only; no source invalidation or explicit removal; D-06.FIRST_PRODUCER.REMOVAL_PROFILE / Live Charge |
+| Relocation | Either-controller ordinary-original non-King; preserve ID/source/payload/permanent data; allegiance not continuing; targets answer |
+| Reactions / accounting | Existing committed capture/destruction death-centered blast, own original source per chain, owner loss AP/no destruction capture AP; prior Batch A |
+| Engine gate / tests | IMPLEMENTED: createLiveChargeExperimentalRuleset, pinned v1 profile/hash and existing root/consumer/codec seams. PASS58 new cases, including mirrored real cast/duplicate/provenance/AP/slot/blast/rollback/restore/replay and AP0 public workflow. No Live Charge gameplay field remains UNKNOWN within this bounded profile |
+
+## Historical 02B-5C implementation authorization
 
 2026-10-16: owner authorizes real experimental Holy Shield-only producer implementation and acceptance against the six answers below. No new gameplay field approved. The authorized actor/target/cost/profile integration has passed acceptance as recorded below; all other producers remain NOT_READY/disabled. No full Guardian or automatic next milestone. Results and exact pins: PHASE_02B_5C_REPORT.
 
@@ -96,7 +114,7 @@ This profile includes dependencies on the producing region. A cell/region Sanctu
 | Gameplay approval status | Only numeric fields and shared Stun rules confirmed; placement/trigger/region policy incomplete | UNKNOWN → NOT_READY, ENABLED=false |
 | Independent acceptance tests | SAN-1…SAN-4 and COMMON cases; final literals derived from signed profile, not legacy destination lookup | PROPOSED test plan; §7 |
 
-## 4. Dynamite — Live Charge
+## 4. Dynamite — Live Charge (historical5A profile; superseded by02B-6 overlay)
 
 | Field | Value / boundary | Status; provenance |
 |---|---|---|
