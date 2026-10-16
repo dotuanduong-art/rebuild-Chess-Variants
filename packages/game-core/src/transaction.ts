@@ -7,6 +7,13 @@ import type {
   PieceId,
   Piece,
   SerializableValue,
+  EffectApplication,
+  EffectRemovalOperation,
+  EffectRelocationOperation,
+  EffectSetSwapOperation,
+  DelayedScheduleOperation,
+  DelayedCancelOperation,
+  EffectSourceIdentity,
 } from '@variant-chess/shared-types';
 import {
   assertGameState,
@@ -14,6 +21,7 @@ import {
   BASE_RULESET_ID,
   allocateGameId,
   appendGameHistory,
+  assertRulesetProfiles,
 } from './state.js';
 import { recordActionReady } from './repetition.js';
 import type { RepetitionProjection } from './repetition.js';
@@ -27,11 +35,46 @@ import {
 import type { BasePosition, BaseOperationResult, TurnState, TurnBoundary } from './base-game.js';
 import { chooseCanonical } from './random.js';
 import { cloneData } from './canonical.js';
-import { generateBaseMoves } from './movement.js';
 import { getPieceAt, getPiece } from './board.js';
 import type { EffectRegistry } from './effects.js';
+import {
+  assertEffectRuntimeState,
+  planEffectApplication,
+  runtimeRepetitionProjection,
+  planEffectRemoval,
+  planEffectExpiration,
+  planEffectCleanup,
+  collectDueEffects,
+} from './effect-runtime.js';
+import type { EffectRuntime, EffectBoundary } from './effect-runtime.js';
+import { decodeEffectRecords } from './effects.js';
+import { planEffectRelocation } from './effect-relocation.js';
+import { queryCandidateMainActions } from './action-legality.js';
+import type { RulesetLegalityPolicy } from './action-legality.js';
+import { assertCandidateCaptureAllowed } from './capture-defense.js';
+import { dispatchEffectTriggers } from './effect-triggers.js';
+import type { EffectInstance } from './effects.js';
+import {
+  assertDelayedRuntimeState,
+  collectDueDelayedActions,
+  decodeDelayedActions,
+  delayedFact,
+  delayedRepetitionProjection,
+  planDelayedSchedule,
+  planDelayedCancel,
+} from './delayed-actions.js';
+import type { DelayedActionRegistry } from './delayed-actions.js';
+import { deathReactionInstances, planDeathReaction } from './committed-death.js';
+import type { CommittedDeathContext } from './committed-death.js';
+import { sourceOf } from './effect-parameters.js';
 
 export type DerivedOperation =
+  | DelayedScheduleOperation
+  | DelayedCancelOperation
+  | EffectApplication
+  | EffectRemovalOperation
+  | EffectRelocationOperation
+  | EffectSetSwapOperation
   | { readonly kind: 'destroy'; readonly pieceId: string }
   | {
       readonly kind: 'random';
@@ -64,14 +107,30 @@ export interface CaptureInterceptor {
     | { readonly kind: 'redirect'; readonly targetId: string };
 }
 export interface RulesetBundle extends RulesetIdentity {
+  readonly legalityPolicies?: readonly RulesetLegalityPolicy[];
+  readonly delayedRegistry?: DelayedActionRegistry;
   readonly effectRegistry?: EffectRegistry;
+  readonly effectRuntime?: EffectRuntime;
   readonly repetition?: RepetitionProjection;
-  readonly skills?: Readonly<
-    Record<string, { readonly cost: number; readonly operations: readonly DerivedOperation[] }>
-  >;
+  readonly skills?: Readonly<Record<string, SkillDefinition>>;
   readonly handlers?: readonly EventHandler[];
   readonly interceptors?: readonly CaptureInterceptor[];
 }
+export interface SkillPlan {
+  readonly cost: number;
+  readonly operations: readonly DerivedOperation[];
+}
+export interface SkillPlanningContext {
+  readonly state: GameState;
+  readonly actor: PlayerSide;
+  readonly command: Extract<RootCommand, { kind: 'skill' }>;
+}
+export type SkillDefinition =
+  | SkillPlan
+  | {
+      readonly requiredProfile: Readonly<{ id: string; version: string }>;
+      readonly plan: (context: SkillPlanningContext) => SkillPlan;
+    };
 export interface TransactionOptions {
   readonly operationBudget?: number;
   readonly validate?: (state: GameState) => void;
@@ -91,13 +150,24 @@ export function resolveCommand(
   if (!parsed.success) return rejected('INVALID_COMMAND');
   try {
     assertGameState(state);
+    assertRulesetProfiles(state, ruleset);
   } catch {
     return rejected('INVARIANT');
   }
   if (state.terminal.status !== 'ongoing') return rejected('TERMINAL');
   if (state.rulesetHash !== ruleset.hash || state.rulesetVersion !== ruleset.version)
     return rejected('RULESET_MISMATCH');
-  if (state.effects.length || state.delayedActions.length) return rejected('UNSUPPORTED_RUNTIME');
+  const runtime = ruleset.effectRuntime;
+  const delayedRegistry = ruleset.delayedRegistry;
+  if ((state.delayedActions.length && !delayedRegistry) || (state.effects.length && !runtime))
+    return rejected('UNSUPPORTED_RUNTIME');
+  if (runtime && runtime.registry !== ruleset.effectRegistry) return rejected('INVALID_RULESET');
+  try {
+    if (runtime) assertEffectRuntimeState(state, runtime, !!ruleset.repetition);
+    if (delayedRegistry) assertDelayedRuntimeState(state, delayedRegistry);
+  } catch (error) {
+    return rejected(error instanceof Error ? error.message : 'INVARIANT');
+  }
   const { authority, command } = parsed.data;
   if (command.kind === 'destroy' ? authority.kind !== 'system' : authority.kind !== 'player')
     return rejected('UNAUTHORIZED');
@@ -136,8 +206,23 @@ export function resolveCommand(
   }
   try {
     const transactionId = allocate('transaction');
-    type QueueItem = { operation: RootCommand | DerivedOperation; id: string; causeId: string };
+    type QueueItem = {
+      operation:
+        | RootCommand
+        | DerivedOperation
+        | { kind: 'death_reaction'; death: CommittedDeathContext; instance: EffectInstance }
+        | { kind: 'delayed_fire'; actionId: string; boundary: EffectBoundary }
+        | {
+            kind: 'effect_expire';
+            instanceId: string;
+            boundary: EffectBoundary;
+          };
+      id: string;
+      causeId: string;
+      attribution?: { source: Readonly<EffectSourceIdentity>; effectId: string };
+    };
     const queue: QueueItem[] = [];
+    const reactions = new Set<string>();
     let started = false;
     let turnCauseId = transactionId;
     let steps = 0;
@@ -150,14 +235,35 @@ export function resolveCommand(
           causeId: string;
         }
       | undefined;
-    function enqueue(operation: QueueItem['operation'], causeId: string) {
+    function enqueue(
+      operation: QueueItem['operation'],
+      causeId: string,
+      scheduled = false,
+      root = false,
+      attribution?: QueueItem['attribution'],
+    ) {
+      if (
+        !root &&
+        (operation.kind === 'move' || operation.kind === 'skill' || operation.kind === 'end')
+      )
+        throw new Error('UNSUPPORTED_RUNTIME');
+      if ((operation.kind === 'effect_expire' || operation.kind === 'delayed_fire') && !scheduled)
+        throw new Error('UNSUPPORTED_RUNTIME');
+      if (operation.kind === 'death_reaction' && !scheduled) throw new Error('UNSUPPORTED_RUNTIME');
       if (queue.length >= budget) throw new Error('RESOLUTION_LIMIT');
-      queue.push({ operation, causeId, id: allocate('operation') });
+      queue.push({
+        operation,
+        causeId,
+        id: allocate('operation'),
+        ...(attribution ? { attribution } : {}),
+      });
     }
     function emit<K extends DomainEvent['kind']>(
       kind: K,
       payload: Extract<DomainEvent, { kind: K }>['payload'],
       causeId: string,
+      retired: readonly EffectInstance[] = [],
+      retiredState: GameState = candidate,
     ) {
       const id = allocate('event');
       const event = deepFreeze(
@@ -172,11 +278,22 @@ export function resolveCommand(
         }),
       );
       events.push(event);
+      if (candidate.terminal.status === 'ongoing' && runtime)
+        for (const operation of dispatchEffectTriggers(
+          candidate,
+          event,
+          runtime,
+          reactions,
+          retired,
+          retiredState,
+        ))
+          enqueue(operation, event.id);
       if (candidate.terminal.status === 'ongoing')
         for (const handler of handlers) {
           for (const operation of handler.react(event, deepFreeze(cloneData(candidate))))
             enqueue(operation, event.id);
         }
+      return event;
     }
     function basePosition(): BasePosition {
       return {
@@ -186,13 +303,33 @@ export function resolveCommand(
         terminal: { status: 'ongoing' },
       };
     }
-    enqueue(command, transactionId);
+    enqueue(command, transactionId, false, true);
     while (cursor < queue.length || pending) {
       if (++steps > budget) throw new Error('RESOLUTION_LIMIT');
       if (candidate.terminal.status !== 'ongoing') break;
       if (cursor >= queue.length && pending) {
         const boundary = pending.boundaries[pending.phase === 'end' ? 0 : 1]!;
         const causeId = pending.causeId;
+        if (pending.phase === 'start') candidate.turn = pending.turn;
+        const effectBoundary: EffectBoundary = {
+          side: boundary.side,
+          boundary: pending.phase,
+          ordinal: Math.floor(boundary.plyIndex / 2) + 1,
+        };
+        if (runtime) {
+          for (const instanceId of collectDueEffects(
+            decodeEffectRecords(candidate.effects, runtime.registry, candidate),
+            effectBoundary,
+          ))
+            enqueue({ kind: 'effect_expire', instanceId, boundary: effectBoundary }, causeId, true);
+        }
+        if (delayedRegistry)
+          for (const actionId of collectDueDelayedActions(
+            candidate,
+            delayedRegistry,
+            effectBoundary,
+          ))
+            enqueue({ kind: 'delayed_fire', actionId, boundary: effectBoundary }, causeId, true);
         if (pending.phase === 'end') {
           pending.phase = 'start';
           emit('turn_ended', { ...boundary, kind: 'turnEnd' }, causeId);
@@ -210,15 +347,21 @@ export function resolveCommand(
       if (operation.kind === 'move') {
         const destination = operation.to;
         const attacker = getPiece(candidate.board, operation.pieceId);
+        if (attacker && candidate.turn.mainMoveUsed) throw new Error('MAIN_MOVE_USED');
+        let victim = getPieceAt(candidate.board, operation.to);
+        if (attacker && attacker.controller === actor && victim)
+          assertCandidateCaptureAllowed(candidate, attacker, victim, ruleset);
         if (
           !attacker ||
           attacker.controller !== actor ||
-          !generateBaseMoves(candidate.board, attacker.id).some(
-            (m) => m.to.file === destination.file && m.to.rankIndex === destination.rankIndex,
+          !queryCandidateMainActions(candidate, ruleset, actor).some(
+            (m) =>
+              m.pieceId === attacker.id &&
+              m.to.file === destination.file &&
+              m.to.rankIndex === destination.rankIndex,
           )
         )
           throw new Error('INVALID_MOVE');
-        let victim = getPieceAt(candidate.board, operation.to);
         if (victim)
           for (const interceptor of interceptors) {
             const decision = interceptor.intercept(
@@ -231,10 +374,12 @@ export function resolveCommand(
             if (decision.kind === 'cancel') throw new Error('CAPTURE_CANCELED');
             if (decision.kind === 'redirect') {
               victim = getPiece(candidate.board, decision.targetId as PieceId);
+              if (victim) assertCandidateCaptureAllowed(candidate, attacker, victim, ruleset);
               if (
                 !victim ||
-                !generateBaseMoves(candidate.board, attacker.id).some(
-                  (m) => m.kind === 'capture' && m.targetId === victim!.id,
+                !queryCandidateMainActions(candidate, ruleset, actor).some(
+                  (m) =>
+                    m.pieceId === attacker.id && m.kind === 'capture' && m.targetId === victim!.id,
                 )
               )
                 throw new Error('INVALID_REDIRECT');
@@ -243,6 +388,123 @@ export function resolveCommand(
           }
       }
       if (operation.kind === 'fail') throw new Error(operation.code);
+      if (operation.kind === 'death_reaction') {
+        if (!runtime) throw new Error('UNSUPPORTED_RUNTIME');
+        const targets = planDeathReaction(candidate, operation.death, operation.instance, runtime);
+        const source = sourceOf(operation.instance);
+        const event = emit(
+          'bomb_exploded',
+          {
+            effectId: operation.instance.id,
+            definitionId: operation.instance.definitionId,
+            center: cloneData(operation.death.victim.position),
+            source,
+            targets: [...targets],
+          },
+          item.causeId,
+        );
+        for (const pieceId of targets)
+          enqueue({ kind: 'destroy', pieceId }, event.id, false, false, {
+            source,
+            effectId: operation.instance.id,
+          });
+        continue;
+      }
+      if (operation.kind === 'delayed_schedule') {
+        if (!delayedRegistry) throw new Error('UNSUPPORTED_RUNTIME');
+        const plan = planDelayedSchedule(
+          candidate,
+          operation,
+          actor,
+          item.id,
+          item.causeId,
+          transactionId,
+          delayedRegistry,
+        );
+        candidate.delayedActions = plan.records;
+        emit('delayed_action_scheduled', delayedFact(plan.action), item.id);
+        continue;
+      }
+      if (operation.kind === 'delayed_cancel') {
+        if (!delayedRegistry) throw new Error('UNSUPPORTED_RUNTIME');
+        const plan = planDelayedCancel(candidate, operation, delayedRegistry);
+        candidate.delayedActions = plan.records;
+        if (plan.action)
+          emit(
+            'delayed_action_cancelled',
+            { ...delayedFact(plan.action), reason: plan.reason },
+            item.id,
+          );
+        continue;
+      }
+      if (operation.kind === 'delayed_fire') {
+        if (!delayedRegistry) throw new Error('UNSUPPORTED_RUNTIME');
+        const action = decodeDelayedActions(
+          candidate.delayedActions,
+          delayedRegistry,
+          candidate,
+        ).find((a) => a.id === operation.actionId);
+        if (
+          !action ||
+          !collectDueDelayedActions(candidate, delayedRegistry, operation.boundary).includes(
+            action.id,
+          )
+        )
+          continue;
+        const missing =
+          action.target?.kind === 'piece' &&
+          !Object.hasOwn(candidate.board.pieces, action.target.pieceId);
+        if (missing && action.missingTarget === 'reject') throw new Error('DELAYED_TARGET_MISSING');
+        candidate.delayedActions = candidate.delayedActions.filter((a) => a.id !== action.id);
+        if (missing)
+          emit(
+            'delayed_action_cancelled',
+            { ...delayedFact(action), reason: 'missing-target' },
+            item.id,
+          );
+        else {
+          const plans = cloneData(
+            delayedRegistry
+              .get(action.definitionId)
+              .execute(deepFreeze({ state: cloneData(candidate), action })),
+          );
+          emit('delayed_action_fired', delayedFact(action), item.id);
+          for (const plan of plans) enqueue(plan, item.id);
+        }
+        continue;
+      }
+      if (operation.kind === 'effect_relocate' || operation.kind === 'effect_sets_swap') {
+        if (!runtime) throw new Error('UNSUPPORTED_RUNTIME');
+        const plan = planEffectRelocation(candidate, operation, runtime, !!ruleset.repetition);
+        candidate.effects = plan.records;
+        for (const fact of plan.facts) emit(fact.kind, fact.payload, item.id);
+        continue;
+      }
+      if (operation.kind === 'effect_apply') {
+        if (!runtime) throw new Error('UNSUPPORTED_RUNTIME');
+        if (
+          pending?.phase === 'start' &&
+          runtime.registry.get(operation.definitionId).lifetime.kind === 'current-turn-window'
+        )
+          throw new Error('EFFECT_WINDOW_CLOSED');
+        const retired = decodeEffectRecords(candidate.effects, runtime.registry, candidate);
+        const plan = planEffectApplication(candidate, operation, actor, item.id, runtime);
+        candidate.effects = plan.records;
+        assertEffectRuntimeState(candidate, runtime, !!ruleset.repetition, false);
+        for (const fact of plan.facts) emit(fact.kind, fact.payload, item.id, retired);
+        continue;
+      }
+      if (operation.kind === 'effect_remove' || operation.kind === 'effect_expire') {
+        if (!runtime) throw new Error('UNSUPPORTED_RUNTIME');
+        const retired = decodeEffectRecords(candidate.effects, runtime.registry, candidate);
+        const plan =
+          operation.kind === 'effect_remove'
+            ? planEffectRemoval(candidate, operation, runtime)
+            : planEffectExpiration(candidate, operation.instanceId, operation.boundary, runtime);
+        candidate.effects = plan.records;
+        for (const fact of plan.facts) emit(fact.kind, fact.payload, item.id, retired);
+        continue;
+      }
       if (operation.kind === 'marker') {
         emit('marker', { value: operation.value }, item.causeId);
         continue;
@@ -271,17 +533,38 @@ export function resolveCommand(
       let result: BaseOperationResult;
       if (operation.kind === 'move')
         result = applyBaseMainMove(basePosition(), actor, operation.pieceId, operation.to);
-      else if (operation.kind === 'end') result = endBaseTurn(basePosition(), actor);
+      else if (operation.kind === 'end')
+        result = endBaseTurn(
+          basePosition(),
+          actor,
+          () => queryCandidateMainActions(candidate, ruleset, actor).length > 0,
+        );
       else if (operation.kind === 'destroy')
         result = applyBaseDestruction(basePosition(), operation.pieceId as PieceId);
-      else {
+      else if (operation.kind === 'skill') {
         const skill = Object.hasOwn(ruleset.skills ?? {}, operation.skillId)
           ? ruleset.skills?.[operation.skillId]
           : undefined;
         if (!skill) throw new Error('NOT_AVAILABLE');
-        result = commitNormalSkillUsage(basePosition(), actor, skill.cost);
-        if (result.ok) for (const derived of skill.operations) enqueue(derived, item.id);
-      }
+        let plan: SkillPlan;
+        if ('plan' in skill) {
+          const profile = candidate.playerProfiles[actor];
+          if (
+            !profile ||
+            profile.id !== skill.requiredProfile.id ||
+            profile.version !== skill.requiredProfile.version
+          )
+            throw new Error('UNAUTHORIZED_VARIANT');
+          plan = skill.plan(
+            deepFreeze({ state: cloneData(candidate), actor, command: cloneData(operation) }),
+          );
+        } else {
+          if (operation.intent) throw new Error('INVALID_SKILL_INTENT');
+          plan = skill;
+        }
+        result = commitNormalSkillUsage(basePosition(), actor, plan.cost);
+        if (result.ok) for (const derived of plan.operations) enqueue(derived, item.id);
+      } else throw new Error('UNSUPPORTED_RUNTIME');
       if (!result.ok) throw new Error(result.code);
       candidate.board = result.value.board as GameState['board'];
       candidate.ap = { ...result.value.ap };
@@ -293,6 +576,8 @@ export function resolveCommand(
             skillUsed: before.turn.skillUsed || operation.kind === 'skill',
           }
         : result.value.turn;
+      const cleanup = runtime ? planEffectCleanup(before, candidate, runtime) : undefined;
+      if (cleanup) candidate.effects = cleanup.records;
       if (result.boundaries.length)
         pending = {
           turn: result.value.turn,
@@ -324,20 +609,74 @@ export function resolveCommand(
           controller: victim.controller,
           type: victim.currentType,
         };
-        if (operation.kind === 'move')
-          emit('capture_committed', { ...payload, actor, attackerId: operation.pieceId }, item.id);
-        else
-          emit(
-            'piece_destroyed',
-            { ...payload, actor: authority.kind === 'system' ? null : actor },
-            item.id,
-          );
+        const death: CommittedDeathContext = deepFreeze(
+          cloneData({
+            victim: {
+              id: victim.id,
+              owner: victim.owner,
+              controller: victim.controller,
+              position: victim.position,
+              currentType: victim.currentType,
+            },
+            reason: operation.kind === 'move' ? 'capture' : 'destruction',
+            attackerId: operation.kind === 'move' ? operation.pieceId : null,
+            rootActor: authority.kind === 'player' ? actor : null,
+            transactionId,
+            operationId: item.id,
+            causeId: item.causeId,
+            destructionSource: item.attribution?.source ?? null,
+            retiredEffects: runtime
+              ? decodeEffectRecords(before.effects, runtime.registry, before).filter(
+                  (e) => e.target.kind === 'piece' && e.target.pieceId === victim.id,
+                )
+              : [],
+          }),
+        );
+        const deathEvent =
+          operation.kind === 'move'
+            ? emit(
+                'capture_committed',
+                { ...payload, actor, attackerId: operation.pieceId },
+                item.id,
+              )
+            : emit(
+                'piece_destroyed',
+                {
+                  ...payload,
+                  actor:
+                    item.attribution?.source.sourcePlayer ??
+                    (authority.kind === 'system' ? null : actor),
+                  ...(item.attribution
+                    ? {
+                        source: item.attribution.source,
+                        originEffectId: item.attribution.effectId,
+                        rootActor: death.rootActor,
+                      }
+                    : {}),
+                },
+                item.id,
+              );
+        if (candidate.terminal.status === 'ongoing' && runtime)
+          for (const instance of deathReactionInstances(death, runtime)) {
+            const key = JSON.stringify(['committed-death', deathEvent.id, instance.id]);
+            if (reactions.has(key)) continue;
+            reactions.add(key);
+            enqueue({ kind: 'death_reaction', death, instance }, deathEvent.id, true);
+          }
       }
       if (operation.kind === 'skill')
         emit(
           'skill_used',
           { actor, skillId: operation.skillId, actualCost: before.ap[actor] - candidate.ap[actor] },
           item.id,
+        );
+      for (const fact of cleanup?.facts ?? [])
+        emit(
+          fact.kind,
+          fact.payload,
+          item.id,
+          runtime ? decodeEffectRecords(before.effects, runtime.registry, before) : [],
+          before,
         );
       if (candidate.terminal.status !== 'ongoing') {
         emit('terminal_reached', { ...candidate.terminal }, item.id);
@@ -351,7 +690,15 @@ export function resolveCommand(
           emit('piece_promoted', { pieceId: piece.id, controller: piece.controller }, item.id);
     }
     if (started && candidate.terminal.status === 'ongoing') {
-      const counted = recordActionReady(candidate, ruleset.repetition);
+      const effectProjection = runtime
+        ? runtimeRepetitionProjection(runtime, ruleset.repetition)
+        : ruleset.repetition;
+      const counted = recordActionReady(
+        candidate,
+        delayedRegistry
+          ? delayedRepetitionProjection(delayedRegistry, effectProjection)
+          : effectProjection,
+      );
       candidate.history = counted.history;
       candidate.terminal = counted.terminal;
       if (candidate.terminal.status !== 'ongoing')
@@ -361,6 +708,8 @@ export function resolveCommand(
     candidate.history = recorded.history;
     candidate.counters = recorded.counters;
     assertGameState(candidate);
+    if (runtime) assertEffectRuntimeState(candidate, runtime, !!ruleset.repetition);
+    if (delayedRegistry) assertDelayedRuntimeState(candidate, delayedRegistry);
     options.validate?.(deepFreeze(cloneData(candidate)));
     return deepFreeze({ ok: true, state: candidate, events });
   } catch (error) {

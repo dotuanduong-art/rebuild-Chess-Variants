@@ -47,6 +47,8 @@ export const PieceSchema = z
     controller: PlayerSideSchema,
     baseType: PieceTypeSchema,
     currentType: PieceTypeSchema,
+    // Absent provenance is unknown, never inferred from the chess type by producers.
+    origin: z.enum(['ordinary-original', 'special', 'summoned']).optional(),
     position: CoordinateSchema,
   })
   .readonly();
@@ -110,8 +112,10 @@ export function createResultSchema<T extends z.ZodType>(valueSchema: T) {
 
 // Phase 01B engine contracts: internal full-state data, never a live client view.
 const SafeCountSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
-export const ENGINE_VERSION = '0.1.0' as const;
-export const STATE_SCHEMA_VERSION = '1.0.0' as const;
+// 02B-5C pins targeted skill execution, persistent player profiles and piece provenance semantics.
+// Older archives must use their pinned engine rather than silently changing simulation.
+export const ENGINE_VERSION = '0.6.0' as const;
+export const STATE_SCHEMA_VERSION = '1.1.0' as const;
 export const RNG_ALGORITHM_VERSION = 'xorshift32-v1' as const;
 export const TurnStateSchema = z.strictObject({
   sideToAct: PlayerSideSchema,
@@ -153,6 +157,29 @@ export const EffectTargetSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('cell'), position: CoordinateSchema }),
   z.strictObject({ kind: z.literal('player'), side: PlayerSideSchema }),
 ]);
+export const EffectReferenceSchema = z.discriminatedUnion('kind', [
+  z.strictObject({
+    role: IdentifierSchema,
+    kind: z.literal('effect'),
+    instanceId: IdentifierSchema,
+  }),
+  z.strictObject({
+    role: IdentifierSchema,
+    kind: z.literal('piece'),
+    pieceId: PieceIdSchema,
+    presence: z.enum(['live', 'historical']),
+  }),
+  z.strictObject({
+    role: IdentifierSchema,
+    kind: z.literal('group'),
+    groupId: IdentifierSchema,
+    owner: PlayerSideSchema,
+  }),
+]);
+export const EffectLinkSemanticsSchema = z.strictObject({
+  group: SerializableValueSchema,
+  references: z.array(SerializableValueSchema),
+});
 export const EffectLifetimeSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('permanent') }),
   z.strictObject({
@@ -183,15 +210,66 @@ const CleanupPolicySchema = z.union([
   z.literal('cleanup-only'),
   z.strictObject({ kind: z.literal('declared-reaction'), policyId: EffectPolicyRefSchema }),
 ]);
-const StackingKeySchema = z.enum(['type-target', 'type-source-target', 'explicit-group']);
+export const EffectSourceIdentitySchema = z.strictObject({
+  sourcePlayer: PlayerSideSchema,
+  sourceVariant: IdentifierSchema.nullable().default(null),
+  sourceSkill: IdentifierSchema.nullable().default(null),
+  sourcePiece: PieceIdSchema.nullable().default(null),
+  sourceIncarnation: IdentifierSchema.nullable().default(null),
+});
+export const EffectDurationParametersSchema = z.strictObject({
+  schemaVersion: z.literal('1.0.0'),
+  producerId: IdentifierSchema,
+  producerVersion: VersionIdentifierSchema,
+  rounds: SafeCountSchema.min(1),
+});
+export const ProducerRoundsPolicySchema = z.strictObject({
+  kind: z.literal('producer-rounds'),
+  schemaVersion: z.literal('1.0.0'),
+  boundary: z.enum(['start', 'end']),
+  producers: z
+    .array(
+      z.strictObject({
+        id: IdentifierSchema,
+        version: VersionIdentifierSchema,
+        sourceVariant: IdentifierSchema.nullable(),
+        sourceSkill: IdentifierSchema,
+        allowedRounds: z.array(SafeCountSchema.min(1)).min(1),
+        requireCaster: z.boolean(),
+        supportsIncarnation: z.boolean(),
+      }),
+    )
+    .min(1),
+});
+export type EffectSourceIdentity = z.infer<typeof EffectSourceIdentitySchema>;
+export type EffectDurationParameters = z.infer<typeof EffectDurationParametersSchema>;
+const StackingKeySchema = z.enum([
+  'type-target',
+  'type-source-target',
+  'type-source-identity-target',
+  'explicit-group',
+]);
 export const EffectDefinitionMetadataSchema = z.strictObject({
   typeId: IdentifierSchema,
   schemaVersion: VersionIdentifierSchema,
   targets: z.array(z.enum(['piece', 'cell', 'player'])).min(1),
   category: z.enum(['buff', 'debuff', 'neutral']),
+  family: z
+    .strictObject({ id: IdentifierSchema, policy: z.literal('unique-target-ignore') })
+    .optional(),
+  deathReaction: z
+    .strictObject({ mode: z.literal('bomb-blast-v1'), handlerId: IdentifierSchema })
+    .optional(),
   sourceAttribution: z.strictObject({
     kind: z.literal('preserve-source'),
     requiredRefs: z.array(z.enum(['variant', 'skill', 'piece'])),
+    profile: z
+      .strictObject({
+        kind: z.literal('player-originated-v1'),
+        sourceVariant: IdentifierSchema,
+        sourceSkill: IdentifierSchema,
+      })
+      .optional(),
   }),
   ownership: z.discriminatedUnion('kind', [
     z.strictObject({ kind: z.enum(['source-player', 'target-owner', 'target-controller']) }),
@@ -201,15 +279,17 @@ export const EffectDefinitionMetadataSchema = z.strictObject({
     z.strictObject({ kind: z.enum(['allowed', 'denied']) }),
     z.strictObject({ kind: z.literal('declared'), policyId: EffectPolicyRefSchema }),
   ]),
-  lifetime: EffectLifetimeSchema,
+  lifetime: z.union([EffectLifetimeSchema, ProducerRoundsPolicySchema]),
   stacking: z.discriminatedUnion('mode', [
+    z.strictObject({ key: StackingKeySchema, mode: z.literal('independent') }),
+    z.strictObject({ key: StackingKeySchema, mode: z.literal('replace') }),
     z.strictObject({ key: StackingKeySchema, mode: z.literal('ignore') }),
     z.strictObject({
       key: StackingKeySchema,
       mode: z.literal('refresh'),
       payload: z.enum(['replace', 'preserve', 'declared']),
       source: z.enum(['preserve', 'replace', 'declared']),
-      deadline: z.enum(['preserve', 'replace', 'declared']),
+      deadline: z.enum(['preserve', 'replace', 'reset', 'extend', 'declared']),
       mergePolicyId: EffectPolicyRefSchema.nullable(),
     }),
     z.strictObject({
@@ -221,6 +301,8 @@ export const EffectDefinitionMetadataSchema = z.strictObject({
     }),
   ]),
   removal: z.record(EffectRemovalReasonSchema, CleanupPolicySchema),
+  // Permission is separate from the consequence of an already authorized removal.
+  removalPermissions: z.array(EffectRemovalReasonSchema).optional(),
   relocation: z.discriminatedUnion('kind', [
     z.strictObject({
       kind: z.literal('retargetable'),
@@ -238,6 +320,17 @@ export const EffectDefinitionMetadataSchema = z.strictObject({
     z.strictObject({ kind: z.literal('declared'), policyId: EffectPolicyRefSchema }),
   ]),
   capabilities: z.array(IdentifierSchema),
+  captureDefense: z
+    .strictObject({ kind: z.literal('atomic-reject'), policyId: IdentifierSchema })
+    .optional(),
+  actionRestrictions: z
+    .array(
+      z.strictObject({
+        actionKind: z.enum(['main-action', 'capture-threat']),
+        policyId: IdentifierSchema,
+      }),
+    )
+    .optional(),
   triggers: z.array(
     z.strictObject({
       id: IdentifierSchema,
@@ -247,6 +340,15 @@ export const EffectDefinitionMetadataSchema = z.strictObject({
     }),
   ),
   repetition: z.strictObject({ projectionId: IdentifierSchema }),
+  eligibility: z
+    .strictObject({
+      policyId: EffectPolicyRefSchema,
+      pieceOrigin: z.literal('ordinary-original').optional(),
+    })
+    .optional(),
+  links: z
+    .strictObject({ validationId: EffectPolicyRefSchema, normalizationId: EffectPolicyRefSchema })
+    .optional(),
 });
 export const EffectInstanceSchema = z.strictObject({
   id: IdentifierSchema,
@@ -257,15 +359,20 @@ export const EffectInstanceSchema = z.strictObject({
   sourceVariant: IdentifierSchema.nullable(),
   sourceSkill: IdentifierSchema.nullable(),
   sourcePiece: PieceIdSchema.nullable(),
+  sourceIncarnation: IdentifierSchema.nullable().optional(),
+  duration: EffectDurationParametersSchema.optional(),
   appliedSequence: SafeCountSchema,
   timingAnchor: DeadlineSchema,
   lifetime: EffectLifetimeSchema,
   deadline: DeadlineSchema.nullable(),
   payload: SerializableValueSchema,
   groupId: IdentifierSchema.nullable(),
+  extensionRounds: SafeCountSchema.min(1).optional(),
+  references: z.array(EffectReferenceSchema).optional(),
 });
 export type EffectDefinitionMetadata = z.infer<typeof EffectDefinitionMetadataSchema>;
 export type EffectTarget = z.infer<typeof EffectTargetSchema>;
+export type EffectReference = z.infer<typeof EffectReferenceSchema>;
 export type EffectLifetime = z.infer<typeof EffectLifetimeSchema>;
 export type EffectRemovalReason = z.infer<typeof EffectRemovalReasonSchema>;
 export type EffectInstanceData = z.infer<typeof EffectInstanceSchema>;
@@ -273,6 +380,106 @@ export const EffectRecordPayloadSchema = z.strictObject({
   format: z.literal('effect-instance-v1'),
   instance: EffectInstanceSchema,
 });
+export const EffectApplicationSchema = z.strictObject({
+  kind: z.literal('effect_apply'),
+  definitionId: IdentifierSchema,
+  definitionVersion: VersionIdentifierSchema,
+  target: EffectTargetSchema,
+  sourcePlayer: z.union([PlayerSideSchema, z.literal('actor')]),
+  sourceVariant: IdentifierSchema.nullable(),
+  sourceSkill: IdentifierSchema.nullable(),
+  sourcePiece: PieceIdSchema.nullable(),
+  sourceIncarnation: IdentifierSchema.nullable().optional(),
+  duration: EffectDurationParametersSchema.optional(),
+  payload: SerializableValueSchema,
+  groupId: IdentifierSchema.nullable(),
+  references: z.array(EffectReferenceSchema).optional(),
+});
+export type EffectApplication = z.infer<typeof EffectApplicationSchema>;
+export const EffectRemovalOperationSchema = z.strictObject({
+  kind: z.literal('effect_remove'),
+  instanceId: IdentifierSchema,
+  reason: EffectRemovalReasonSchema.exclude(['expired']),
+});
+export type EffectRemovalOperation = z.infer<typeof EffectRemovalOperationSchema>;
+export const EffectRelocationOperationSchema = z.strictObject({
+  kind: z.literal('effect_relocate'),
+  instanceId: IdentifierSchema,
+  target: EffectTargetSchema,
+});
+export const EffectSetSwapOperationSchema = z.strictObject({
+  kind: z.literal('effect_sets_swap'),
+  pieceA: PieceIdSchema,
+  pieceB: PieceIdSchema,
+});
+export type EffectRelocationOperation = z.infer<typeof EffectRelocationOperationSchema>;
+export type EffectSetSwapOperation = z.infer<typeof EffectSetSwapOperationSchema>;
+
+export const DelayedActionDefinitionMetadataSchema = z.strictObject({
+  typeId: IdentifierSchema,
+  schemaVersion: VersionIdentifierSchema,
+  mode: z.literal('synthetic-v1'),
+  sourcePolicy: z.literal('snapshot'),
+  missingTarget: z.enum(['cancel', 'reject']),
+  cancellationReasons: z.array(IdentifierSchema),
+});
+const DelayedInputFields = {
+  definitionId: IdentifierSchema,
+  definitionVersion: VersionIdentifierSchema,
+  target: EffectTargetSchema.nullable(),
+  dueBoundary: DeadlineSchema,
+  payload: SerializableValueSchema,
+};
+export const DelayedScheduleOperationSchema = z.strictObject({
+  kind: z.literal('delayed_schedule'),
+  ...DelayedInputFields,
+  sourcePlayer: z.enum(['white', 'black', 'actor']),
+  sourceVariant: IdentifierSchema.nullable(),
+  sourceSkill: IdentifierSchema.nullable(),
+  sourcePiece: PieceIdSchema.nullable(),
+});
+export const DelayedCancelOperationSchema = z.strictObject({
+  kind: z.literal('delayed_cancel'),
+  actionId: IdentifierSchema,
+  reason: IdentifierSchema,
+});
+export const DelayedActionSchema = z.strictObject({
+  ...DelayedInputFields,
+  id: IdentifierSchema,
+  status: z.literal('scheduled'),
+  transactionId: IdentifierSchema,
+  causeId: IdentifierSchema,
+  appliedSequence: SafeCountSchema.min(1),
+  scheduledAt: DeadlineSchema,
+  source: z.strictObject({
+    player: PlayerSideSchema,
+    controller: PlayerSideSchema,
+    variant: IdentifierSchema.nullable(),
+    skill: IdentifierSchema.nullable(),
+    piece: PieceIdSchema.nullable(),
+    policy: z.literal('snapshot'),
+  }),
+  missingTarget: z.enum(['cancel', 'reject']),
+  cancellationReasons: z.array(IdentifierSchema),
+});
+export const DelayedActionRecordPayloadSchema = z.strictObject({
+  format: z.literal('delayed-action-v1'),
+  action: DelayedActionSchema,
+});
+export type DelayedActionDefinitionMetadata = z.infer<typeof DelayedActionDefinitionMetadataSchema>;
+export type DelayedActionData = z.infer<typeof DelayedActionSchema>;
+export type DelayedScheduleOperation = z.infer<typeof DelayedScheduleOperationSchema>;
+export type DelayedCancelOperation = z.infer<typeof DelayedCancelOperationSchema>;
+export const VariantProfileSchema = z.strictObject({
+  id: IdentifierSchema,
+  version: VersionIdentifierSchema,
+});
+export const PlayerProfilesSchema = z.strictObject({
+  white: VariantProfileSchema.nullable(),
+  black: VariantProfileSchema.nullable(),
+});
+export type VariantProfile = z.infer<typeof VariantProfileSchema>;
+export type PlayerProfiles = z.infer<typeof PlayerProfilesSchema>;
 export const GameStateSchema = z
   .strictObject({
     matchId: MatchIdSchema,
@@ -280,6 +487,7 @@ export const GameStateSchema = z
     schemaVersion: z.literal(STATE_SCHEMA_VERSION),
     rulesetVersion: VersionIdentifierSchema,
     rulesetHash: IdentifierSchema,
+    playerProfiles: PlayerProfilesSchema,
     board: BoardSchema,
     ap: z.strictObject({ white: SafeCountSchema, black: SafeCountSchema }),
     turn: TurnStateSchema,
@@ -323,7 +531,13 @@ export const GameStateSchema = z
 export type GameState = z.infer<typeof GameStateSchema>;
 export const RootCommandSchema = z.discriminatedUnion('kind', [
   z.strictObject({ kind: z.literal('move'), pieceId: PieceIdSchema, to: CoordinateSchema }),
-  z.strictObject({ kind: z.literal('skill'), skillId: IdentifierSchema }),
+  z.strictObject({
+    kind: z.literal('skill'),
+    skillId: IdentifierSchema,
+    intent: z
+      .strictObject({ kind: z.literal('piece-target-v1'), pieceId: PieceIdSchema })
+      .optional(),
+  }),
   z.strictObject({ kind: z.literal('end') }),
   z.strictObject({ kind: z.literal('destroy'), pieceId: PieceIdSchema }),
 ]);
@@ -357,7 +571,71 @@ const BoundaryPayload = {
   plyIndex: SafeCountSchema,
   roundIndex: SafeCountSchema.min(1),
 };
+const EffectFactPayload = {
+  effectId: IdentifierSchema,
+  definitionId: IdentifierSchema,
+  definitionVersion: VersionIdentifierSchema,
+  target: EffectTargetSchema,
+  sourcePlayer: PlayerSideSchema,
+  sourceVariant: IdentifierSchema.nullable(),
+  sourceSkill: IdentifierSchema.nullable(),
+  sourcePiece: PieceIdSchema.nullable(),
+  effectVisibility: z.enum(['public', 'source-player', 'internal']),
+};
 export const DomainEventSchema = z.discriminatedUnion('kind', [
+  typedEvent(
+    'delayed_action_scheduled',
+    z.strictObject({
+      actionId: IdentifierSchema,
+      definitionId: IdentifierSchema,
+      definitionVersion: VersionIdentifierSchema,
+      sourcePlayer: PlayerSideSchema,
+      dueBoundary: DeadlineSchema,
+    }),
+  ),
+  typedEvent(
+    'delayed_action_fired',
+    z.strictObject({
+      actionId: IdentifierSchema,
+      definitionId: IdentifierSchema,
+      definitionVersion: VersionIdentifierSchema,
+      sourcePlayer: PlayerSideSchema,
+      dueBoundary: DeadlineSchema,
+    }),
+  ),
+  typedEvent(
+    'delayed_action_cancelled',
+    z.strictObject({
+      actionId: IdentifierSchema,
+      definitionId: IdentifierSchema,
+      definitionVersion: VersionIdentifierSchema,
+      sourcePlayer: PlayerSideSchema,
+      dueBoundary: DeadlineSchema,
+      reason: IdentifierSchema,
+    }),
+  ),
+  typedEvent(
+    'effect_relocated',
+    z.strictObject({ ...EffectFactPayload, from: EffectTargetSchema, to: EffectTargetSchema }),
+  ),
+  typedEvent(
+    'effect_sets_swapped',
+    z.strictObject({
+      pieceA: PieceIdSchema,
+      pieceB: PieceIdSchema,
+      effectIds: z.array(IdentifierSchema),
+    }),
+  ),
+  typedEvent('effect_applied', z.strictObject(EffectFactPayload)),
+  typedEvent('effect_refreshed', z.strictObject(EffectFactPayload)),
+  typedEvent(
+    'effect_stacked',
+    z.strictObject({ ...EffectFactPayload, count: SafeCountSchema.min(1) }),
+  ),
+  typedEvent(
+    'effect_removed',
+    z.strictObject({ ...EffectFactPayload, reason: EffectRemovalReasonSchema }),
+  ),
   typedEvent(
     'move_committed',
     z.strictObject({
@@ -374,7 +652,23 @@ export const DomainEventSchema = z.discriminatedUnion('kind', [
   ),
   typedEvent(
     'piece_destroyed',
-    z.strictObject({ ...DeathPayload, actor: PlayerSideSchema.nullable() }),
+    z.strictObject({
+      ...DeathPayload,
+      actor: PlayerSideSchema.nullable(),
+      source: EffectSourceIdentitySchema.optional(),
+      originEffectId: IdentifierSchema.optional(),
+      rootActor: PlayerSideSchema.nullable().optional(),
+    }),
+  ),
+  typedEvent(
+    'bomb_exploded',
+    z.strictObject({
+      effectId: IdentifierSchema,
+      definitionId: IdentifierSchema,
+      center: CoordinateSchema,
+      source: EffectSourceIdentitySchema,
+      targets: z.array(PieceIdSchema),
+    }),
   ),
   typedEvent(
     'piece_promoted',

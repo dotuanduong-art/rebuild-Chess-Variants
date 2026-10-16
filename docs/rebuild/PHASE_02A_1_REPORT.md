@@ -1,6 +1,6 @@
 # Phase 02A-1 — Effect Data Foundation
 
-2026-10-14 (Asia/Saigon). **PASS trong scope 02A-1.** Chủ dự án duyệt riêng nền tảng dữ liệu; chưa duyệt Effect Runtime hoặc concrete definitions.
+2026-10-14; xác minh lại 2026-10-15 (Asia/Saigon). **PASS trong scope 02A-1.** Chủ dự án duyệt riêng nền tảng dữ liệu; chưa duyệt Effect Runtime hoặc concrete definitions.
 
 ## Files changed
 
@@ -31,14 +31,16 @@
 ## Tests và kết quả thực tế
 
 - TDD qua public seams được yêu cầu: ghi nhận failing focused runs trước implementation registry, instance validation, identity/lifetime và codec integration; sửa đến green.
-- Focused suite: **15 tests PASS**; core workspace typecheck PASS.
+- Focused suite: **21 tests PASS**, gồm 15 tests nền tảng và 6 tests regression hardening cho malformed/duplicate IDs, source/group namespaces, lifetime/deadline contracts hiện tại, snapshot tampering/exact versions, immutable payload isolation và registry isolation. Không phát hiện defect cần sửa production code.
 - `npm run lint`: PASS (ESLint, boundary checks cho 6 workspaces, root Prettier).
 - `npm run typecheck`: PASS (package builds, tooling và toàn bộ workspaces).
-- `npm run test`: **19 files / 213 tests PASS**, gồm toàn bộ 198 tests Phase 01B và 15 tests mới.
+- `npm run test`: **19 files / 219 tests PASS**, gồm toàn bộ 198 tests Phase 01B và 21 tests effects.
 - `npm run build`: PASS (packages/backend và frontend scaffold hiện có; không viết frontend mới).
 - `npm run smoke:exports`: PASS, ESM/CJS và private-subpath boundaries.
 - `npm run check:hygiene`, `git diff --check`: PASS. Không dependency/lockfile changes, không generated output được stage/commit.
 - Một targeted self-review của thay đổi trong scope; không audit legacy hoặc 27 Variants.
+
+Ngày 2026-10-15 chạy focused tests trước, sau đó một vòng root lint/typecheck/tests/build và exports/hygiene đều PASS; boundary checks nằm trong root lint. Implementation 02A-1 đã có sẵn, phiên xác minh này chỉ cập nhật báo cáo, giữ regression tests hiện có và không sửa production code.
 
 ## Giới hạn và handoff cho 02A-2
 

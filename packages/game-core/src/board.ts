@@ -72,6 +72,7 @@ export function createInitialBoard(): Board {
           controller: side,
           baseType: currentType,
           currentType,
+          origin: 'ordinary-original',
           position: { file, rankIndex },
         });
       }

@@ -11,6 +11,7 @@ import type {
   SerializableValue,
 } from '@variant-chess/shared-types';
 import { canonicalEncode, cloneData, deepFreeze } from './canonical.js';
+import { assertEffectSourceProfile, resolveEffectLifetime, sourceOf } from './effect-parameters.js';
 
 export type ImmutableJson =
   | null
@@ -21,9 +22,11 @@ export type ImmutableJson =
   | { readonly [key: string]: ImmutableJson };
 export type Immutable<T> = SerializableValue extends T
   ? ImmutableJson
-  : T extends object
-    ? { readonly [K in keyof T]: Immutable<T[K]> }
-    : T;
+  : T extends string | number | boolean | null
+    ? T
+    : T extends object
+      ? { readonly [K in keyof T]: Immutable<T[K]> }
+      : T;
 /** Reviewed pure schemas belong to a pinned bundle, never to GameState. */
 export interface PayloadSchema<T extends SerializableValue = SerializableValue> {
   readonly parse: (value: unknown) => T;
@@ -54,7 +57,7 @@ export interface EffectRegistry {
 
 /** Validation must not coerce, drop fields, or rewrite serialized payloads. */
 export function validateEffectPayload<T extends SerializableValue>(
-  definition: EffectDefinition<T>,
+  definition: Pick<EffectDefinition<T>, 'schemaVersion' | 'payloadSchema'>,
   version: string,
   payload: unknown,
 ): Immutable<T> {
@@ -102,11 +105,32 @@ export function validateEffectInstance(
     throw new Error('EFFECT_SOURCE_MISSING');
   if (instance.timingAnchor.side !== instance.sourcePlayer)
     throw new Error('EFFECT_ANCHOR_MISMATCH');
-  if (canonicalEncode(instance.lifetime) !== canonicalEncode(definition.lifetime))
+  assertEffectSourceProfile(definition, sourceOf(instance));
+  const declaredLifetime = resolveEffectLifetime(definition, sourceOf(instance), instance.duration);
+  if (
+    (definition.stacking.key === 'type-source-identity-target' ||
+      definition.sourceAttribution.profile) &&
+    instance.sourceIncarnation === undefined
+  )
+    throw new Error('EFFECT_SOURCE_NOT_CANONICAL');
+  if (canonicalEncode(instance.lifetime) !== canonicalEncode(declaredLifetime))
     throw new Error('EFFECT_LIFETIME_MISMATCH');
   const { lifetime, deadline, timingAnchor } = instance;
+  if (
+    definition.eligibility?.pieceOrigin &&
+    (instance.target.kind !== 'piece' ||
+      state.board.pieces[instance.target.pieceId]?.origin !== definition.eligibility.pieceOrigin)
+  )
+    throw new Error('EFFECT_UNIT_INELIGIBLE');
+  if (
+    instance.extensionRounds !== undefined &&
+    (lifetime.kind !== 'rounds' ||
+      definition.stacking.mode !== 'refresh' ||
+      definition.stacking.deadline !== 'extend')
+  )
+    throw new Error('EFFECT_LIFETIME_MISMATCH');
   if (lifetime.kind === 'rounds') {
-    const expiry = timingAnchor.ordinal + lifetime.rounds;
+    const expiry = timingAnchor.ordinal + lifetime.rounds + (instance.extensionRounds ?? 0);
     if (
       !Number.isSafeInteger(expiry) ||
       !deadline ||
@@ -150,6 +174,14 @@ export function validateEffectInstances(
   const instances = raw.map((value) => validateEffectInstance(value, registry, state));
   if (new Set(instances.map((instance) => instance.id)).size !== instances.length)
     throw new Error('DUPLICATE_EFFECT_INSTANCE');
+  const families = new Set<string>();
+  for (const instance of instances) {
+    const family = registry.get(instance.definitionId).family;
+    if (!family) continue;
+    const key = canonicalEncode([family.id, instance.target]);
+    if (families.has(key)) throw new Error('EFFECT_FAMILY_DUPLICATE');
+    families.add(key);
+  }
   return Object.freeze(instances);
 }
 
@@ -212,15 +244,28 @@ export function validateSnapshotEffects(state: GameState, registry?: EffectRegis
 /** One construction per ruleset bundle; no registration API exists after construction. */
 export function createEffectRegistry(definitions: readonly EffectDefinition[]): EffectRegistry {
   const entries = definitions.map(({ payloadSchema, repetitionProjector, ...metadata }) => {
+    if (metadata.lifetime.kind === 'producer-rounds') {
+      const producers = metadata.lifetime.producers;
+      if (
+        new Set(producers.map((p) => p.id)).size !== producers.length ||
+        producers.some((p) => new Set(p.allowedRounds).size !== p.allowedRounds.length)
+      )
+        throw new Error('DUPLICATE_EFFECT_PRODUCER');
+    }
     if (!payloadSchema || typeof payloadSchema.parse !== 'function')
       throw new Error('INVALID_PAYLOAD_SCHEMA');
     if (typeof repetitionProjector !== 'function') throw new Error('MISSING_EFFECT_PROJECTION');
     const data = EffectDefinitionMetadataSchema.parse(cloneData(metadata));
+    if (data.family && (data.stacking.mode !== 'ignore' || data.stacking.key !== 'type-target'))
+      throw new Error('INVALID_EFFECT_FAMILY_POLICY');
     for (const ids of [
       data.targets,
       data.sourceAttribution.requiredRefs,
       data.capabilities,
       data.triggers.map((trigger) => trigger.id),
+      (data.actionRestrictions ?? []).map(
+        (restriction) => `${restriction.actionKind}:${restriction.policyId}`,
+      ),
     ])
       if (new Set(ids).size !== ids.length) throw new Error('DUPLICATE_EFFECT_METADATA');
     if (

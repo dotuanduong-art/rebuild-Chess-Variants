@@ -21,7 +21,7 @@ it('strict versioned canonical snapshots round-trip with deep isolation and full
   expect(fullStateHash(restored)).toEqual(fullStateHash(initial));
   expect(encodeSnapshot({ ...initial, ap: { black: 0, white: 0 } })).toBe(encoded);
   expect(() =>
-    decodeSnapshot(encoded.replace('"schemaVersion":"1.0.0"', '"schemaVersion":"9.0.0"')),
+    decodeSnapshot(encoded.replace('"schemaVersion":"1.1.0"', '"schemaVersion":"9.0.0"')),
   ).toThrow();
 });
 

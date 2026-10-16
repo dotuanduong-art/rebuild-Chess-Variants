@@ -15,7 +15,11 @@ export function recordReplay(
   ruleset: RulesetBundle = BASE_RULESET_ID,
 ): RecordReplayResult {
   try {
-    const initialSnapshot = encodeSnapshot(initial);
+    const initialSnapshot = encodeSnapshot(
+      initial,
+      ruleset.effectRegistry,
+      ruleset.delayedRegistry,
+    );
     let state = decodeSnapshot(initialSnapshot, ruleset);
     const steps: ReplayArchive['steps'] = [];
     for (const raw of inputs) {
@@ -24,7 +28,7 @@ export function recordReplay(
       state = result.state;
       steps.push({
         input: TrustedInputSchema.parse(raw),
-        stateHash: fullStateHash(state).digest,
+        stateHash: fullStateHash(state, ruleset.effectRegistry, ruleset.delayedRegistry).digest,
         events: [...result.events],
       });
     }
@@ -73,7 +77,8 @@ export function executeReplay(
       const result = resolveCommand(state, step.input, ruleset);
       if (
         !result.ok ||
-        fullStateHash(result.state).digest !== step.stateHash ||
+        fullStateHash(result.state, ruleset.effectRegistry, ruleset.delayedRegistry).digest !==
+          step.stateHash ||
         canonicalEncode(result.events) !== canonicalEncode(step.events)
       )
         throw new Error('REPLAY_DIVERGENCE');

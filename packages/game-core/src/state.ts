@@ -1,5 +1,5 @@
 import { GameStateSchema, ENGINE_VERSION, STATE_SCHEMA_VERSION } from '@variant-chess/shared-types';
-import type { GameState } from '@variant-chess/shared-types';
+import type { GameState, PlayerProfiles } from '@variant-chess/shared-types';
 import { createBasePosition } from './base-game.js';
 import { createInitialBoard } from './board.js';
 import type { Board } from './board.js';
@@ -82,6 +82,17 @@ export interface GameConfig {
 export interface RulesetIdentity {
   readonly version: string;
   readonly hash: string;
+  readonly playerProfiles?: Readonly<{
+    white: Readonly<PlayerProfiles['white']>;
+    black: Readonly<PlayerProfiles['black']>;
+  }>;
+}
+export function assertRulesetProfiles(state: GameState, ruleset: RulesetIdentity): void {
+  if (
+    canonicalEncode(state.playerProfiles) !==
+    canonicalEncode(ruleset.playerProfiles ?? { white: null, black: null })
+  )
+    throw new Error('PROFILE_MISMATCH');
 }
 export const BASE_RULESET_ID: RulesetIdentity = Object.freeze({
   version: '1.0.0',
@@ -132,6 +143,7 @@ export function createGame(
     schemaVersion: STATE_SCHEMA_VERSION,
     rulesetVersion: ruleset.version,
     rulesetHash: ruleset.hash,
+    playerProfiles: ruleset.playerProfiles ?? { white: null, black: null },
     rng: createRng(config.seed),
     counters: { transaction: 0, event: 0, operation: 0, snapshot: 0, piece: 0 },
     variantState: { white: {}, black: {} },

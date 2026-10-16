@@ -104,17 +104,18 @@ function nextTurn(position: BasePosition): BaseOperationResult {
   });
 }
 
-export function endBaseTurn(position: BasePosition, actor: PlayerSide): BaseOperationResult {
+export function endBaseTurn(
+  position: BasePosition,
+  actor: PlayerSide,
+  hasLegalMainMove: (board: Board, side: PlayerSide) => boolean = (board, side) =>
+    Object.values(board.pieces).some(
+      (piece) => piece.controller === side && generateBaseMoves(board, piece.id).length > 0,
+    ),
+): BaseOperationResult {
   if (Object.hasOwn(position, 'matchId')) return { ok: false, code: 'USE_ROOT_TRANSACTION' };
   if (position.terminal.status !== 'ongoing') return { ok: false, code: 'TERMINAL' };
   if (position.turn.sideToAct !== actor) return { ok: false, code: 'WRONG_TURN' };
-  if (
-    !position.turn.mainMoveUsed &&
-    Object.values(position.board.pieces).some(
-      (piece) =>
-        piece.controller === actor && generateBaseMoves(position.board, piece.id).length > 0,
-    )
-  )
+  if (!position.turn.mainMoveUsed && hasLegalMainMove(position.board, actor))
     return { ok: false, code: 'MAIN_MOVE_REQUIRED' };
   return nextTurn(position);
 }

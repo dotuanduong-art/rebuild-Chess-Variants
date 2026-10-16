@@ -439,3 +439,315 @@ it('validates current-turn windows and distinct event-count/progress lifetime de
     ).toBeNull();
   }
 });
+
+// Regression hardening of current 02A-1 public validation/codec contracts only.
+it('rejects malformed operation identities and duplicate records with different metadata', () => {
+  const registry = createEffectRegistry([definition()]);
+  const game = state();
+  for (const id of [
+    'm:operation:0',
+    'm:operation:-1',
+    'm:operation:1.0',
+    'm:operation:1e0',
+    'm:operation:9007199254740992',
+    'm:event:1',
+    'm:operation:',
+  ])
+    expect(() => validateEffectInstance({ ...instance(), id }, registry, game), id).toThrow(
+      'EFFECT_ID_MISMATCH',
+    );
+  const other = {
+    ...instance(),
+    target: { kind: 'piece', pieceId: 'black-A15' },
+    payload: { nested: { values: [7] } },
+  };
+  expect(() => encodeEffectRecords([instance(), other], registry, game)).toThrow(
+    'DUPLICATE_EFFECT_INSTANCE',
+  );
+  const records = encodeEffectRecords(
+    [instance(), { ...other, id: 'm:operation:2' }],
+    registry,
+    game,
+  );
+  expect(decodeEffectRecords(records, registry, game).map((effect) => effect.id)).toEqual([
+    'm:operation:1',
+    'm:operation:2',
+  ]);
+  expect(() => decodeEffectRecords([records[0]!, records[0]!], registry, game)).toThrow(
+    'DUPLICATE_EFFECT_INSTANCE',
+  );
+  expect(() =>
+    createEffectRegistry([definition(), { ...definition(), schemaVersion: '2.0.0' }]),
+  ).toThrow('DUPLICATE_EFFECT_DEFINITION');
+});
+
+it('validates source references and exact group namespace prefixes independently of target ownership', () => {
+  const registry = createEffectRegistry([
+    {
+      ...definition(),
+      sourceAttribution: {
+        kind: 'preserve-source',
+        requiredRefs: ['variant', 'skill', 'piece'],
+      },
+    },
+  ]);
+  const game = state();
+  const raw = {
+    ...instance(),
+    sourceVariant: 'future.variant',
+    sourcePiece: 'retired-piece',
+    groupId: 'm:black:pair',
+  };
+  // A dead source piece is permitted; a white target does not change the black source namespace.
+  expect(validateEffectInstance(raw, registry, game).sourcePlayer).toBe('black');
+  for (const field of ['sourceVariant', 'sourceSkill', 'sourcePiece'])
+    expect(() => validateEffectInstance({ ...raw, [field]: null }, registry, game), field).toThrow(
+      'EFFECT_SOURCE_MISSING',
+    );
+  for (const groupId of ['other:black:pair', 'm:white:pair', 'm:blackish:pair', 'm:black-pair'])
+    expect(() => validateEffectInstance({ ...raw, groupId }, registry, game), groupId).toThrow(
+      'EFFECT_GROUP_MISMATCH',
+    );
+  expect(() =>
+    validateEffectInstance(
+      { ...raw, timingAnchor: { side: 'white', boundary: 'end', ordinal: 0 } },
+      registry,
+      game,
+    ),
+  ).toThrow('EFFECT_ANCHOR_MISMATCH');
+});
+
+it('rejects invalid lifetime/deadline data under the current supported instance contract', () => {
+  const game = state();
+  const deadline = { side: 'black', boundary: 'end', ordinal: 1 };
+  const untimed: EffectDefinition['lifetime'][] = [
+    { kind: 'permanent' },
+    { kind: 'event-count', event: 'future.entry', count: 2 },
+    { kind: 'progress', policyId: 'future.progress' },
+  ];
+  for (const lifetime of untimed) {
+    const registry = createEffectRegistry([{ ...definition(), lifetime }]);
+    expect(validateEffectInstance({ ...instance(), lifetime }, registry, game).deadline).toBeNull();
+    expect(() =>
+      validateEffectInstance({ ...instance(), lifetime, deadline }, registry, game),
+    ).toThrow('EFFECT_LIFETIME_MISMATCH');
+  }
+  const lifetime = { kind: 'rounds' as const, rounds: 1, boundary: 'start' as const };
+  const registry = createEffectRegistry([{ ...definition(), lifetime }]);
+  for (const sourcePlayer of ['white', 'black'] as const) {
+    const raw = {
+      ...instance(),
+      lifetime,
+      sourcePlayer,
+      timingAnchor: { side: sourcePlayer, boundary: 'start', ordinal: 2 },
+      deadline: { side: sourcePlayer, boundary: 'start', ordinal: 3 },
+    };
+    expect(validateEffectInstance(raw, registry, game).deadline).toEqual({
+      side: sourcePlayer,
+      boundary: 'start',
+      ordinal: 3,
+    });
+    for (const patch of [
+      { lifetime: { ...lifetime, rounds: 2 } },
+      { timingAnchor: { side: sourcePlayer, boundary: 'end', ordinal: 2 } },
+      { timingAnchor: { side: sourcePlayer, boundary: 'start', ordinal: Number.MAX_SAFE_INTEGER } },
+    ])
+      expect(() => validateEffectInstance({ ...raw, ...patch }, registry, game)).toThrow(
+        'EFFECT_LIFETIME_MISMATCH',
+      );
+  }
+  const window = { kind: 'current-turn-window' as const, boundary: 'end' as const };
+  const windowRegistry = createEffectRegistry([{ ...definition(), lifetime: window }]);
+  const blackTurn = { ...game, turn: { ...game.turn, sideToAct: 'black' as const, plyIndex: 1 } };
+  expect(
+    validateEffectInstance({ ...instance(), lifetime: window, deadline }, windowRegistry, blackTurn)
+      .deadline,
+  ).toEqual({ side: 'black', boundary: 'end', ordinal: 1 });
+  for (const invalid of [null, { ...deadline, boundary: 'start' }, { ...deadline, ordinal: 0 }])
+    expect(() =>
+      validateEffectInstance(
+        { ...instance(), lifetime: window, deadline: invalid },
+        windowRegistry,
+        blackTurn,
+      ),
+    ).toThrow('EFFECT_LIFETIME_MISMATCH');
+});
+
+it('rejects snapshot envelope, identity, payload and exact-version tampering without changing the input game', () => {
+  const registry = createEffectRegistry([definition()]);
+  const game = state();
+  const records = encodeEffectRecords([instance()], registry, game);
+  const encoded = encodeSnapshot({ ...game, effects: records }, registry);
+  const bundle = { version: game.rulesetVersion, hash: game.rulesetHash, effectRegistry: registry };
+  type WireRecord = {
+    id: string;
+    definitionId: string;
+    source: string;
+    deadline: unknown;
+    payload: {
+      format: string;
+      instance: Omit<ReturnType<typeof instance>, 'groupId' | 'payload'> & {
+        groupId: string | null;
+        payload: unknown;
+      };
+    };
+  };
+  const mutations: Array<[(record: WireRecord) => void, string]> = [
+    [
+      (r) => {
+        r.id = 'm:operation:2';
+      },
+      'EFFECT_ENVELOPE_MISMATCH',
+    ],
+    [
+      (r) => {
+        r.definitionId = 'missing';
+      },
+      'EFFECT_ENVELOPE_MISMATCH',
+    ],
+    [
+      (r) => {
+        r.deadline = { side: 'black', boundary: 'end', ordinal: 1 };
+      },
+      'EFFECT_ENVELOPE_MISMATCH',
+    ],
+    [
+      (r) => {
+        r.payload.instance.id = 'm:operation:2';
+      },
+      'EFFECT_ENVELOPE_MISMATCH',
+    ],
+    [
+      (r) => {
+        r.definitionId = r.payload.instance.definitionId = 'missing';
+      },
+      'UNKNOWN_EFFECT_DEFINITION',
+    ],
+    [
+      (r) => {
+        r.id = r.payload.instance.id = 'other:operation:1';
+      },
+      'EFFECT_ID_MISMATCH',
+    ],
+    [
+      (r) => {
+        r.payload.instance.groupId = 'other:black:pair';
+      },
+      'EFFECT_GROUP_MISMATCH',
+    ],
+  ];
+  for (const [mutate, code] of mutations) {
+    const raw = JSON.parse(encoded) as { effects: WireRecord[] };
+    mutate(raw.effects[0]!);
+    expect(() => decodeSnapshot(JSON.stringify(raw), bundle)).toThrow(code);
+  }
+  for (const version of ['0.9.0', '1.0.1', '1.0.0-preview']) {
+    const raw = JSON.parse(encoded) as { effects: WireRecord[] };
+    raw.effects[0]!.payload.instance.definitionVersion = version;
+    expect(() => decodeSnapshot(JSON.stringify(raw), bundle), version).toThrow(
+      'EFFECT_VERSION_MISMATCH',
+    );
+  }
+  const malformed = JSON.parse(encoded) as { effects: WireRecord[] };
+  malformed.effects[0]!.payload.instance.payload = { nested: { values: ['invalid'] } };
+  expect(() => decodeSnapshot(JSON.stringify(malformed), bundle)).toThrow('PAYLOAD');
+  malformed.effects[0]!.payload.format = 'effect-instance-v9';
+  expect(() => decodeSnapshot(JSON.stringify(malformed), bundle)).toThrow();
+  const duplicate = JSON.parse(encoded) as { effects: WireRecord[] };
+  duplicate.effects.push(structuredClone(duplicate.effects[0]!));
+  expect(() => decodeSnapshot(JSON.stringify(duplicate), bundle)).toThrow('DUPLICATE_RULE_ID');
+  expect(game.effects).toEqual([]);
+  expect(game.counters).toEqual({ transaction: 0, event: 0, operation: 2, snapshot: 1, piece: 0 });
+  expect(decodeEffectRecords(records, registry, game)[0]?.payload).toEqual({
+    nested: { values: [3] },
+  });
+});
+
+it('isolates shared caller payloads, parser output and restored snapshots at every nested level', () => {
+  const schema = definition().payloadSchema;
+  const shared = { nested: { values: [3] } };
+  const registry = createEffectRegistry([
+    {
+      ...definition(),
+      payloadSchema: {
+        parse(value: unknown) {
+          schema.parse(value);
+          return shared;
+        },
+      },
+    },
+  ]);
+  const game = state();
+  const raw = { ...instance(), payload: shared };
+  const records = encodeEffectRecords([raw, { ...raw, id: 'm:operation:2' }], registry, game);
+  const encoded = encodeSnapshot({ ...game, effects: records }, registry);
+  const bundle = { version: game.rulesetVersion, hash: game.rulesetHash, effectRegistry: registry };
+  const restored = decodeSnapshot(encoded, bundle);
+  const parsed = decodeEffectRecords(restored.effects, registry, restored);
+  const first = parsed[0]!.payload as { nested: { values: number[] } };
+  const second = parsed[1]!.payload as { nested: { values: number[] } };
+  expect(first.nested).not.toBe(second.nested);
+  expect(first.nested.values).not.toBe(shared.nested.values);
+  expect(Object.isFrozen(first.nested.values)).toBe(true);
+  expect(Reflect.set(first.nested.values, '0', 99)).toBe(false);
+  shared.nested.values[0] = 8;
+  expect(first).toEqual({ nested: { values: [3] } });
+  expect(second).toEqual({ nested: { values: [3] } });
+  expect(restored.effects).toEqual(records);
+  const persisted = restored.effects[0]!.payload as {
+    instance: { payload: { nested: { values: number[] } } };
+  };
+  expect(Object.isFrozen(persisted.instance.payload.nested.values)).toBe(true);
+  expect(Reflect.set(persisted.instance.payload.nested.values, '0', 99)).toBe(false);
+  expect(persisted.instance.payload).toEqual({ nested: { values: [3] } });
+});
+
+it('isolates registries using the same definition ID with different schemas and pinned versions', () => {
+  const permissive = createEffectRegistry([definition()]);
+  const positiveOnly = createEffectRegistry([
+    {
+      ...definition(),
+      payloadSchema: {
+        parse(value: unknown) {
+          const parsed = definition().payloadSchema.parse(value);
+          if (parsed.nested.values.some((value) => value < 0)) throw new Error('NEGATIVE_PAYLOAD');
+          return parsed;
+        },
+      },
+    },
+  ]);
+  const nextVersion = createEffectRegistry([{ ...definition(), schemaVersion: '2.0.0' }]);
+  const game = state();
+  const raw = { ...instance(), payload: { nested: { values: [-2] } } };
+  expect(validateEffectInstance(raw, permissive, game).payload).toEqual({
+    nested: { values: [-2] },
+  });
+  expect(() => validateEffectInstance(raw, positiveOnly, game)).toThrow('NEGATIVE_PAYLOAD');
+  expect(() => validateEffectInstance(raw, nextVersion, game)).toThrow('EFFECT_VERSION_MISMATCH');
+  expect(
+    validateEffectInstance({ ...raw, definitionVersion: '2.0.0' }, nextVersion, game)
+      .definitionVersion,
+  ).toBe('2.0.0');
+  const encoded = encodeSnapshot(
+    { ...game, effects: encodeEffectRecords([raw], permissive, game) },
+    permissive,
+  );
+  expect(() =>
+    decodeSnapshot(encoded, {
+      version: game.rulesetVersion,
+      hash: game.rulesetHash,
+      effectRegistry: positiveOnly,
+    }),
+  ).toThrow('NEGATIVE_PAYLOAD');
+  expect(() =>
+    decodeSnapshot(encoded, {
+      version: game.rulesetVersion,
+      hash: game.rulesetHash,
+      effectRegistry: nextVersion,
+    }),
+  ).toThrow('EFFECT_VERSION_MISMATCH');
+  expect(validateEffectInstance(raw, permissive, game).payload).toEqual({
+    nested: { values: [-2] },
+  });
+  expect(permissive.get('future.resonance')).not.toBe(positiveOnly.get('future.resonance'));
+});

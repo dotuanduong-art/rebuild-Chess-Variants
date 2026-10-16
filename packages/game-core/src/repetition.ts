@@ -33,15 +33,22 @@ export function repetitionKey(state: GameState, project?: RepetitionProjection):
       (a, b) =>
         a.position.rankIndex * 15 + a.position.file - (b.position.rankIndex * 15 + b.position.file),
     )
-    .map(({ position, originalSide, owner, controller, baseType, currentType }) => ({
+    .map(({ position, originalSide, owner, controller, baseType, currentType, origin }) => ({
       position,
       originalSide,
       owner,
       controller,
       baseType,
       currentType,
+      origin: origin ?? null,
     }));
-  return canonicalEncode({ pieces, sideToAct: state.turn.sideToAct, ap: state.ap, ...semantic });
+  return canonicalEncode({
+    pieces,
+    playerProfiles: state.playerProfiles,
+    sideToAct: state.turn.sideToAct,
+    ap: state.ap,
+    ...semantic,
+  });
 }
 export function recordActionReady(state: GameState, project?: RepetitionProjection): GameState {
   if (state.terminal.status !== 'ongoing' || state.history.lastCountedPly === state.turn.plyIndex)
