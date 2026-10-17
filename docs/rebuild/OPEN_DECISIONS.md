@@ -2,6 +2,25 @@
 
 Ngày 2026-10-13. Chủ dự án quyết gameplay; architect tìm bằng chứng và đưa phương án. Recommendation chưa được trả lời **không phải** luật. Spec/architecture viết xong không tự duyệt Phase 01. Các decision IDs stable để fixtures/PR tương lai truy vết.
 
+## Phase 02B B1 — two bounded Stun producer approvals (2026-10-16)
+
+Owner explicitly approves and authorizes one documentation-first implementation milestone containing both profiles below. These six field groups supersede only the corresponding B1 proposals/unknowns in planning02B-7. Gameplay is **APPROVED**; implementation/enablement is **PENDING acceptance / DISABLED** at this record. Parent D-04/05/06/08/12/22 remain OPEN/PARTIALLY_APPROVED outside these exact subsets. No commit/push or next batch.
+
+| Scoped decision IDs / field group | APPROVED answer |
+|---|---|
+| D-22.B1.SCOPE | Separate Nephalem Judgment Chains-only and Angel Holy Seal-only experimental profiles. No passive, sibling, full Variant or combined factory; no extra effect, delayed Stun, Silence, Berserk, Mark or Aegis |
+| D-22.NEPHALEM.JUDGMENT_CHAINS.TARGETS; D-22.ANGEL.HOLY_SEAL.TARGETS | Exactly one live enemy-current-controller ordinary-original Pawn/Knight/Bishop/Rook/Queen. King excluded (preserve Holy Seal O-6); special/summoned/unknown reject. Anywhere on 15×15; no distance or line-of-sight requirement. Cast allegiance is not continuing eligibility. Eligible ordinary-original non-King relocation to either controller preserves all instance data; controller/owner changes alone do not remove Stun |
+| D-22.NEPHALEM.JUDGMENT_CHAINS.COST; D-22.ANGEL.HOLY_SEAL.COST | Fixed5 / fixed6 AP respectively; root charges once and consumes one normal skill slot, main move remains mandatory under P00-07/09. No discount/alternate cost/passive/reward |
+| D-22.NEPHALEM.JUDGMENT_CHAINS.DURATION; D-22.ANGEL.HOLY_SEAL.DURATION | Both existing effect.stun N3 source-end, no cast-boundary tick. Chains3 preserves O-9. Same exact source/target refresh resets3 with stable ID/applied sequence; different sources independent. Empty immutable payload |
+| D-05.B1.JUDGMENT_CHAINS.SOURCE; D-05.B1.HOLY_SEAL.SOURCE | Player-originated-v1: invoking player + exact nephalem/nephalem.judgment_chains or angel/angel.holy_seal + canonical null sourcePiece/null sourceIncarnation. No caster/liveness/incarnation dependency; identity remains stable through control/relocation |
+| D-06.B1.JUDGMENT_CHAINS.REMOVAL; D-06.B1.HOLY_SEAL.REMOVAL | Only natural expiry, bearer committed-death cleanup and terminal cleanup. No explicit cleanse/dispel/consume/replace/source invalidation/link-broken removal or custom reactions/rewards. Generic Stun main Move/Capture/threat/forced-End semantics unchanged; no global skill ban or destruction immunity |
+
+Technical pins chosen for this implementation (new registrations, not historical runtime IDs): skill IDs `nephalem.judgment_chains` / `angel.holy_seal`; profiles `nephalem.judgment-chains-only.experimental` / `angel.holy-seal-only.experimental`, each v1.0.0; producer IDs `nephalem.judgment-chains` / `angel.holy-seal`, each v1.0.0; effect.stun definition v1.0.0 in independent registries. Ruleset hashes `experimental-nephalem-judgment-chains-v1-w{0|1}-b{0|1}` / `experimental-angel-holy-seal-v1-w{0|1}-b{0|1}`, ruleset v1.0.0. Existing exact one-pair source guard is retained. Engine0.6.0/state1.1.0/effect-record v1/replay v1 are retained if no core contract changes prove necessary.
+
+Authorized TDD seams: public factory/profile/root commands, registry/effect records, legality/threat queries, snapshot/repetition/replay and labeled trusted composition/fault fixtures. Approval does not enable either producer until real acceptance and required verification. Final evidence will be recorded in `PHASE_02B_B1_STUN_PRODUCERS_REPORT.md`; stop there.
+
+**B1 implementation acceptance:** PASS. Judgment Chains and Holy Seal are IMPLEMENTED / READY / ENABLED exclusively for selected players in their own pinned factories. Engine0.6.0/state1.1.0 retained.747 tests/36 files PASS (+136); all required verification PASS, including localhost smoke after environment-approved execution outside the restricted sandbox. Standards0 / Spec0 actionable findings. This is implementation acceptance of the six approvals above, not additional gameplay approval or parent closure. [B1 report](PHASE_02B_B1_STUN_PRODUCERS_REPORT.md). Stop before B2/03; no commit/push.
+
 ## Phase 02B-6 — Live Charge-only owner approvals (2026-10-16)
 
 Owner explicitly authorizes documentation-first implementation and verification of one real experimental Live Charge producer. These six answers are **APPROVED only for Live Charge**; Guardian answers below remain intact. At authorization, implementation/enablement were pending acceptance, not inferred from approval. Parent D-04/05/06/08/12/22 remain OPEN/PARTIALLY_APPROVED outside signed subsets. No commit/push or automatic next milestone.

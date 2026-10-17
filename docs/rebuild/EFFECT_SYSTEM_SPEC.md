@@ -1,6 +1,15 @@
 # EFFECT_SYSTEM_SPEC — generic effect engine
 
-## Current implementation authorization — 02B-6 Live Charge only
+## Current B1 authorization — two Stun producers (2026-10-16)
+
+The owner has APPROVED and authorized one batch implementing Judgment Chains-only Nephalem and Holy Seal-only Angel. Six scoped field groups and exact decision IDs are recorded in [OPEN_DECISIONS](OPEN_DECISIONS.md#phase-02b-b1--two-bounded-stun-producer-approvals-2026-10-16): scope, targets/relocation, cost/usage, duration/refresh, source and removal. Each casts one live enemy-current-controller ordinary-original non-King anywhere on the board, without range/path restriction; cost5/6 respectively, normal skill slot and mandatory main move; both apply empty-payload StunN3/source-end/no cast tick. Exact player/Variant/skill/null/null source; stable same-source refresh, independent sources. Relocation allows ordinary non-King destinations of either controller; control/owner changes do not invalidate the bearer. Only expiry/bearer death/terminal cleanup; no extra removal/reward/skill ban.
+
+Technical pins: nephalem.judgment_chains / angel.holy_seal; separate profiles nephalem.judgment-chains-only.experimental / angel.holy-seal-only.experimental v1.0.0; separate effect.stun v1.0.0 registries under experimental-nephalem-judgment-chains-v1-w{0|1}-b{0|1} / experimental-angel-holy-seal-v1-w{0|1}-b{0|1}, ruleset v1.0.0. Preserve exact one-pair source guards, existing Stun consumers and Holy Shield/Live Charge behavior. Engine0.6.0/state1.1.0 retained; no core/schema change. No mixed factory, full Variant, passive/sibling, new mechanic, Phase03, dependencies or commit/push.
+
+Gameplay APPROVED; implementation **PASS / READY / ENABLED only for selected players in the two separate pinned factories** after B1 acceptance:747 tests/36 files and all required checks PASS, including runtime smoke after an environment-approved rerun. Evidence: [B1 acceptance report](PHASE_02B_B1_STUN_PRODUCERS_REPORT.md). This current overlay supersedes only the two precise B1 rows in historical planning below. Parent decisions and all other producers remain open. Work order: signed docs → focused vertical red/green public-seam tests → isolated planners/factories → public AP0 acceptance/snapshot/replay → independent Standards/Spec reviews/full checks → batch report and stop. No automatic B2. Historical milestone evidence remains intact.
+
+
+## Historical implementation authorization — 02B-6 Live Charge only
 
 The owner approves a separate experimental Dynamite Live Charge-only producer. Cast one live invoking-player-controlled ordinary-original non-King piece for fixed3 AP/one normal skill slot; no other Dynamite ability/passive/setup attachment/refund. Any active Bomb family makes the producer cast invalid before debit. Generic family unique-target-ignore remains unchanged.
 
