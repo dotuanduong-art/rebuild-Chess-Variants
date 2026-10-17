@@ -1,6 +1,31 @@
 # OPEN_DECISIONS — decision tree và sổ phê duyệt
 
+## Phase 02B C1 — Turtle Transference owner approvals (2026-10-17)
+
+Owner explicitly authorizes implementation on a84467cb9304ac6740d3b52af5fb73ae16ece060, local origin/main equal, index empty, only pre-existing untracked docs/rebuild/PHASE_02B_GAMEPLAY_COVERAGE_AUDIT.md. Preserve that report unchanged. Parent decisions remain open outside this bounded profile.
+
+| Scoped decision | APPROVED owner answer |
+|---|---|
+| D-22.C1-01.SCOPE | Turtle Transference-only separate selected experimental factory; no passive/Aegis Blessing/Great Sanctuary/full Turtle/mixed factory/default registration |
+| D-10.C1-02.TARGETS | Exactly two distinct live board pieces, one currently controlled by actor and one by opponent; owner/original side irrelevant; reject same/missing/dead/two own/two enemy/unauthorized profile |
+| D-10.C1-03.KING | Neither target King; no universal King effect immunity |
+| D-10.C1-04.PROVENANCE | All valid non-King categories including ordinary-original/summoned/special; no ordinary-only cast restriction. Unknown future categories fail closed if schema/eligibility cannot safely validate; all final attachment constraints remain authoritative |
+| D-10.C1-05.RANGE | No range/line-of-sight/adjacency constraint |
+| D-10.C1-06.EMPTY | One empty and one nonempty set allowed; both empty reject before AP/slot; no dummy effect |
+| D-22.C1-07.COST_TURN | Exactly4 AP/normal optional skill slot/mandatory main, skill-before/after-main preserved; no cooldown/discount/reward/cap |
+| D-05.C1-08.SOURCE | Operation source player/turtle/turtle.transference/null/null, distinct cause metadata; attachment sources never rewritten |
+| D-10.C1-09.WHOLE_SET | Effect-agnostic generic registry/runtime final-assignment swap; no whitelist/filter/copy/reapply. Preserve IDs/source/sequence/payload/anchor/deadline/references/registered policies; enforce both sets/eligibility/family/reference integrity, unsupported binding/control/link policy fails whole root |
+| D-06.C1-10.ATOMICITY | Complete preflight before cost/slot; all invalid targets/sets/assignments/malformed operations/final invariants reject whole command. No lifecycle/death/Bomb/reward/board movement from transport. Later failure rolls back AP/slots/effects/RNG/IDs/history/events |
+
+The owner's explicit acceptance matrix confirms the TDD seams: exported real factory/root and strict intent; generic registered effect runtime/records/action and capture queries; cost artifacts; snapshot/repetition/replay; trusted test-only initial registered attachments/future-like definitions and fault injection. No new seam approval is requested.
+
+Technical version plan: canonical turtle (plugin/inventory V14); turtle.transference; turtle.transference-only.experimental v1.0.0; experimental-turtle-transference-v1-w{0|1}-b{0|1} v1.0.0. Explicit engine0.8.0 capability transference-v1 for the new two-piece command and source-bearing wrapper; state1.1.0 and effect/replay v1 retained because no stored state field changes. Engine0.6/0.7 reject the new intent/operation, no silent migration or opaque namespace reinterpretation. Retained V3 composes V2 plus turtle.transference4 with a new diagnostic pin. Generic effect_sets_swap stays unchanged; the new bounded wrapper delegates to its complete final-assignment preflight in both planner and root.
+
+Registration review plan: Turtle registers consumers only, reusing unchanged pinned real Stun (Chains source), Holy Shield and Live Charge definitions/bindings; none of their skills/profiles is registered for casting. Multiple source players remain independent. Other complete registered definitions can be validated by the same generic swap through labeled trusted test-only bundles; no client registry override, no arbitrary mixed producer API or universal source-guard relaxation. Mine consumer coverage uses a labeled test-only registration where supported. These technical choices add no effect gameplay permissions.
+
 Ngày 2026-10-13. Chủ dự án quyết gameplay; architect tìm bằng chứng và đưa phương án. Recommendation chưa được trả lời **không phải** luật. Spec/architecture viết xong không tự duyệt Phase 01. Các decision IDs stable để fixtures/PR tương lai truy vết.
+
+**C1 acceptance (2026-10-17):** BATCH_C1_PASS, seventh real producer enabled only in selected separate factory, engine0.8.0/state1.1.0/V3 pin5791f7f2c9a23105.1026 tests/50 files; all required checks and independent Standards/Spec reviews PASS. [Acceptance report](PHASE_02B_C1_TRANSFERENCE_REPORT.md). Prior audit preserved; no stage/commit/push or next batch.
 
 ## Phase 02B B3 — Guardian Sanctuary owner approvals (2026-10-17)
 

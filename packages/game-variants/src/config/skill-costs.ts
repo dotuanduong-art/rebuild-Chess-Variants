@@ -29,3 +29,9 @@ export const SKILL_AP_COSTS_V2 = pinFixedSkillCosts(
   { ...SKILL_AP_COSTS_V1, 'guardian.sanctuary': 5 },
   'e268dfc077cf52ff',
 );
+
+/** C1 retained extension; earlier factories remain bound to V1/V2. */
+export const SKILL_AP_COSTS_V3 = pinFixedSkillCosts(
+  { ...SKILL_AP_COSTS_V2, 'turtle.transference': 4 },
+  '5791f7f2c9a23105',
+);

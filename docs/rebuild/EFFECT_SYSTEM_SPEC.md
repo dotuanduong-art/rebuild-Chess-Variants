@@ -1,5 +1,11 @@
 # EFFECT_SYSTEM_SPEC — generic effect engine
 
+## Current C1 authorization — Turtle Transference-only (2026-10-17)
+
+Owner approves C1-01…10 as recorded in [OPEN_DECISIONS](OPEN_DECISIONS.md#phase-02b-c1--turtle-transference-owner-approvals-2026-10-17). Exactly one current-controller allied and one enemy live non-King target, distinct, unlimited range/LOS; known valid ordinary/summoned/special categories permitted subject to complete final effect eligibility. One empty set allowed, both empty reject; generic complete set swap preserves every effect's original identity/source/sequence/payload/clock/references and validates all final constraints. Fixed4 AP, one normal skill slot, mandatory main unchanged. Exact skill source turtle/turtle.transference/null/null never replaces attachment sources. No passive/Aegis/Great Sanctuary/full or mixed factory.
+
+Implementation authorized only for separate selected Transference-only profile, strict two-piece-target-v1 and retained immutable AP V3. Existing V1/V2/factories/archives remain exact. C1 acceptance PASS / READY / ENABLED only in the separate selected factory:1026 tests/50 files and all required verification plus independent Standards/Spec reviews PASS. See [C1 acceptance report](PHASE_02B_C1_TRANSFERENCE_REPORT.md). Explicit engine0.8/state1.1 and AP V3; old0.6/0.7 factories remain pinned. Preserve B1/B2/B3 history and the pre-existing untracked Coverage Audit byte-for-byte. No staging/commit/push, other batch or Phase03.
+
 ## Current B3 authorization — Guardian Sanctuary-only (2026-10-17)
 
 The owner explicitly approves B3-01…12 in [OPEN_DECISIONS](OPEN_DECISIONS.md#phase-02b-b3--guardian-sanctuary-owner-approvals-2026-10-17): public clipped3x3 fixed cell region/AP5/one per source/recastN3, ordinary committed-capture TriggerA generates independent source-end StunN1 on eligible living ordinary non-King attacker. Original victim controller and capture destination decide eligibility; King terminal and Shield cancellation suppress reactions; Bomb destruction never qualifies. Exact guardian/guardian.sanctuary/null/null source. Separate Sanctuary-only factory; no Holy Aura/Divine Shield/full or mixed Guardian.

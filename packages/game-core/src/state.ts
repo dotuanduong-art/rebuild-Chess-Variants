@@ -11,6 +11,7 @@ import { recordActionReady } from './repetition.js';
 import type { RepetitionProjection } from './repetition.js';
 import { querySanctuaryRegions } from './sanctuary-region.js';
 import type { SanctuaryPolicy } from './sanctuary-region.js';
+import type { TransferencePolicy } from './transference.js';
 
 export function assertGameState(state: GameState): void {
   GameStateSchema.parse(state);
@@ -85,6 +86,7 @@ export interface GameConfig {
 export interface RulesetIdentity {
   readonly engineVersion?: GameState['engineVersion'];
   readonly sanctuary?: SanctuaryPolicy;
+  readonly transference?: TransferencePolicy;
   readonly version: string;
   readonly hash: string;
   readonly playerProfiles?: Readonly<{
@@ -95,6 +97,15 @@ export interface RulesetIdentity {
 export function assertRulesetProfiles(state: GameState, ruleset: RulesetIdentity): void {
   if (state.engineVersion !== (ruleset.engineVersion ?? ENGINE_VERSION))
     throw new Error('ENGINE_MISMATCH');
+  if (
+    state.engineVersion === '0.8.0'
+      ? ruleset.transference?.kind !== 'transference-v1' ||
+        ruleset.transference.requiredProfile.id !== 'turtle.transference-only.experimental' ||
+        ruleset.transference.requiredProfile.version !== '1.0.0' ||
+        ruleset.transference.cost !== 4
+      : ruleset.transference !== undefined
+  )
+    throw new Error('UNSUPPORTED_TRANSFERENCE');
   if (
     state.engineVersion === '0.7.0'
       ? ruleset.sanctuary?.kind !== 'sanctuary-v1' ||

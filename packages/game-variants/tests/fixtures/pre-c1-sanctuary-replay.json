@@ -1,0 +1,490 @@
+{
+  "provenance": "TRUSTED_TEST_ONLY AP5 archive captured from built accepted a84467c engine0.7 before C1 core changes; V2 retained events/hashes, not a positive AP0 producer acceptance",
+  "archive": {
+    "format": "variant-chess-replay-v1",
+    "initialConfig": {
+      "matchId": "pre-c1-sanctuary",
+      "seed": 23,
+      "engineVersion": "0.7.0",
+      "schemaVersion": "1.1.0",
+      "rulesetVersion": "1.0.0",
+      "rulesetHash": "experimental-guardian-sanctuary-v1-w1-b0",
+      "rngVersion": "xorshift32-v1"
+    },
+    "initialSnapshot": "{\"ap\":{\"black\":0,\"white\":5},\"board\":{\"cells\":[\"wk\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"victim\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"attacker\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"bk\"],\"pieces\":{\"attacker\":{\"baseType\":\"rook\",\"controller\":\"black\",\"currentType\":\"rook\",\"id\":\"attacker\",\"origin\":\"ordinary-original\",\"originalSide\":\"black\",\"owner\":\"black\",\"position\":{\"file\":7,\"rankIndex\":9}},\"bk\":{\"baseType\":\"king\",\"controller\":\"black\",\"currentType\":\"king\",\"id\":\"bk\",\"origin\":\"ordinary-original\",\"originalSide\":\"black\",\"owner\":\"black\",\"position\":{\"file\":14,\"rankIndex\":14}},\"victim\":{\"baseType\":\"pawn\",\"controller\":\"white\",\"currentType\":\"pawn\",\"id\":\"victim\",\"origin\":\"ordinary-original\",\"originalSide\":\"white\",\"owner\":\"white\",\"position\":{\"file\":7,\"rankIndex\":7}},\"wk\":{\"baseType\":\"king\",\"controller\":\"white\",\"currentType\":\"king\",\"id\":\"wk\",\"origin\":\"ordinary-original\",\"originalSide\":\"white\",\"owner\":\"white\",\"position\":{\"file\":0,\"rankIndex\":0}}}},\"counters\":{\"event\":0,\"operation\":0,\"piece\":0,\"snapshot\":1,\"transaction\":0},\"delayedActions\":[],\"effects\":[],\"engineVersion\":\"0.7.0\",\"history\":{\"entries\":[{\"id\":\"pre-c1-sanctuary:snapshot:1\",\"plyIndex\":0,\"positions\":{\"attacker\":{\"file\":7,\"rankIndex\":9},\"bk\":{\"file\":14,\"rankIndex\":14},\"victim\":{\"file\":7,\"rankIndex\":7},\"wk\":{\"file\":0,\"rankIndex\":0}},\"reference\":\"{\\\"cells\\\":[\\\"wk\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"victim\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"attacker\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"bk\\\"],\\\"pieces\\\":{\\\"attacker\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"attacker\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":9}},\\\"bk\\\":{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"king\\\",\\\"id\\\":\\\"bk\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":14,\\\"rankIndex\\\":14}},\\\"victim\\\":{\\\"baseType\\\":\\\"pawn\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"pawn\\\",\\\"id\\\":\\\"victim\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":7}},\\\"wk\\\":{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"king\\\",\\\"id\\\":\\\"wk\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":0}}}}\",\"sequence\":0,\"side\":\"white\"}],\"lastCountedPly\":0,\"limit\":128,\"repetition\":{\"{\\\"ap\\\":{\\\"black\\\":0,\\\"white\\\":5},\\\"delayedActions\\\":[],\\\"effects\\\":[],\\\"pieces\\\":[{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"king\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":0}},{\\\"baseType\\\":\\\"pawn\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"pawn\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":7}},{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":9}},{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"king\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":14,\\\"rankIndex\\\":14}}],\\\"playerProfiles\\\":{\\\"black\\\":null,\\\"white\\\":{\\\"id\\\":\\\"guardian.sanctuary-only.experimental\\\",\\\"version\\\":\\\"1.0.0\\\"}},\\\"sideToAct\\\":\\\"white\\\",\\\"variantState\\\":{\\\"black\\\":{},\\\"white\\\":{}}}\":1}},\"matchId\":\"pre-c1-sanctuary\",\"playerProfiles\":{\"black\":null,\"white\":{\"id\":\"guardian.sanctuary-only.experimental\",\"version\":\"1.0.0\"}},\"rng\":{\"algorithm\":\"xorshift32-v1\",\"cursor\":0,\"seed\":23,\"value\":23},\"rulesetHash\":\"experimental-guardian-sanctuary-v1-w1-b0\",\"rulesetVersion\":\"1.0.0\",\"schemaVersion\":\"1.1.0\",\"terminal\":{\"status\":\"ongoing\"},\"turn\":{\"mainMoveUsed\":false,\"plyIndex\":0,\"roundIndex\":1,\"sideToAct\":\"white\",\"skillUsed\":false},\"variantState\":{\"black\":{},\"white\":{}}}",
+    "steps": [
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "white"
+          },
+          "command": {
+            "kind": "skill",
+            "skillId": "guardian.sanctuary",
+            "intent": {
+              "kind": "cell-target-v1",
+              "cell": {
+                "file": 7,
+                "rankIndex": 7
+              }
+            }
+          }
+        },
+        "stateHash": "4fc5a22fe2b806cf",
+        "events": [
+          {
+            "id": "pre-c1-sanctuary:event:1",
+            "transactionId": "pre-c1-sanctuary:transaction:1",
+            "causeId": "pre-c1-sanctuary:operation:1",
+            "sequence": 1,
+            "visibility": "internal",
+            "kind": "skill_used",
+            "payload": {
+              "actor": "white",
+              "skillId": "guardian.sanctuary",
+              "actualCost": 5
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:2",
+            "transactionId": "pre-c1-sanctuary:transaction:1",
+            "causeId": "pre-c1-sanctuary:operation:1",
+            "sequence": 2,
+            "visibility": "internal",
+            "kind": "ap_changed",
+            "payload": {
+              "side": "white",
+              "before": 5,
+              "after": 0
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:3",
+            "transactionId": "pre-c1-sanctuary:transaction:1",
+            "causeId": "pre-c1-sanctuary:operation:2",
+            "sequence": 3,
+            "visibility": "internal",
+            "kind": "sanctuary_created",
+            "payload": {
+              "region": {
+                "format": "sanctuary-region-v1",
+                "definitionId": "region.guardian.sanctuary",
+                "definitionVersion": "1.0.0",
+                "id": "pre-c1-sanctuary:operation:2",
+                "source": {
+                  "sourcePlayer": "white",
+                  "sourceVariant": "guardian",
+                  "sourceSkill": "guardian.sanctuary",
+                  "sourcePiece": null,
+                  "sourceIncarnation": null
+                },
+                "center": {
+                  "file": 7,
+                  "rankIndex": 7
+                },
+                "visibility": "public",
+                "anchor": {
+                  "side": "white",
+                  "boundary": "end",
+                  "ordinal": 1
+                },
+                "deadline": {
+                  "side": "white",
+                  "boundary": "end",
+                  "ordinal": 4
+                }
+              }
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "white"
+          },
+          "command": {
+            "kind": "move",
+            "pieceId": "wk",
+            "to": {
+              "file": 0,
+              "rankIndex": 1
+            }
+          }
+        },
+        "stateHash": "4848b980ecee2c87",
+        "events": [
+          {
+            "id": "pre-c1-sanctuary:event:4",
+            "transactionId": "pre-c1-sanctuary:transaction:2",
+            "causeId": "pre-c1-sanctuary:operation:3",
+            "sequence": 4,
+            "visibility": "internal",
+            "kind": "move_committed",
+            "payload": {
+              "pieceId": "wk",
+              "from": {
+                "file": 0,
+                "rankIndex": 0
+              },
+              "to": {
+                "file": 0,
+                "rankIndex": 1
+              },
+              "controller": "white",
+              "owner": "white"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:5",
+            "transactionId": "pre-c1-sanctuary:transaction:2",
+            "causeId": "pre-c1-sanctuary:operation:3",
+            "sequence": 5,
+            "visibility": "internal",
+            "kind": "turn_ended",
+            "payload": {
+              "side": "white",
+              "plyIndex": 0,
+              "roundIndex": 1,
+              "kind": "turnEnd"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:6",
+            "transactionId": "pre-c1-sanctuary:transaction:2",
+            "causeId": "pre-c1-sanctuary:operation:3",
+            "sequence": 6,
+            "visibility": "internal",
+            "kind": "turn_started",
+            "payload": {
+              "side": "black",
+              "plyIndex": 1,
+              "roundIndex": 1,
+              "kind": "turnStart"
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "black"
+          },
+          "command": {
+            "kind": "move",
+            "pieceId": "attacker",
+            "to": {
+              "file": 7,
+              "rankIndex": 7
+            }
+          }
+        },
+        "stateHash": "560ec6a6b49efc2f",
+        "events": [
+          {
+            "id": "pre-c1-sanctuary:event:7",
+            "transactionId": "pre-c1-sanctuary:transaction:3",
+            "causeId": "pre-c1-sanctuary:operation:4",
+            "sequence": 7,
+            "visibility": "internal",
+            "kind": "move_committed",
+            "payload": {
+              "pieceId": "attacker",
+              "from": {
+                "file": 7,
+                "rankIndex": 9
+              },
+              "to": {
+                "file": 7,
+                "rankIndex": 7
+              },
+              "controller": "black",
+              "owner": "black"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:8",
+            "transactionId": "pre-c1-sanctuary:transaction:3",
+            "causeId": "pre-c1-sanctuary:operation:4",
+            "sequence": 8,
+            "visibility": "internal",
+            "kind": "capture_committed",
+            "payload": {
+              "pieceId": "victim",
+              "owner": "white",
+              "controller": "white",
+              "type": "pawn",
+              "actor": "black",
+              "attackerId": "attacker"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:9",
+            "transactionId": "pre-c1-sanctuary:transaction:3",
+            "causeId": "pre-c1-sanctuary:operation:4",
+            "sequence": 9,
+            "visibility": "internal",
+            "kind": "ap_changed",
+            "payload": {
+              "side": "white",
+              "before": 0,
+              "after": 1
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:10",
+            "transactionId": "pre-c1-sanctuary:transaction:3",
+            "causeId": "pre-c1-sanctuary:operation:4",
+            "sequence": 10,
+            "visibility": "internal",
+            "kind": "ap_changed",
+            "payload": {
+              "side": "black",
+              "before": 0,
+              "after": 2
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:11",
+            "transactionId": "pre-c1-sanctuary:transaction:3",
+            "causeId": "pre-c1-sanctuary:operation:5",
+            "sequence": 11,
+            "visibility": "internal",
+            "kind": "effect_applied",
+            "payload": {
+              "effectId": "pre-c1-sanctuary:operation:5",
+              "definitionId": "effect.stun",
+              "definitionVersion": "1.0.0",
+              "target": {
+                "kind": "piece",
+                "pieceId": "attacker"
+              },
+              "sourcePlayer": "white",
+              "sourceVariant": "guardian",
+              "sourceSkill": "guardian.sanctuary",
+              "sourcePiece": null,
+              "effectVisibility": "public"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:12",
+            "transactionId": "pre-c1-sanctuary:transaction:3",
+            "causeId": "pre-c1-sanctuary:operation:5",
+            "sequence": 12,
+            "visibility": "internal",
+            "kind": "sanctuary_reacted",
+            "payload": {
+              "capture": {
+                "kind": "ordinary-committed-capture-v1",
+                "transactionId": "pre-c1-sanctuary:transaction:3",
+                "operationId": "pre-c1-sanctuary:operation:4",
+                "causeId": "pre-c1-sanctuary:transaction:3",
+                "eventId": "pre-c1-sanctuary:event:8",
+                "attackerId": "attacker",
+                "capturingPlayer": "black",
+                "victimId": "victim",
+                "victimController": "white",
+                "destination": {
+                  "file": 7,
+                  "rankIndex": 7
+                },
+                "terminal": {
+                  "status": "ongoing"
+                },
+                "regions": [
+                  {
+                    "format": "sanctuary-region-v1",
+                    "definitionId": "region.guardian.sanctuary",
+                    "definitionVersion": "1.0.0",
+                    "id": "pre-c1-sanctuary:operation:2",
+                    "source": {
+                      "sourcePlayer": "white",
+                      "sourceVariant": "guardian",
+                      "sourceSkill": "guardian.sanctuary",
+                      "sourcePiece": null,
+                      "sourceIncarnation": null
+                    },
+                    "center": {
+                      "file": 7,
+                      "rankIndex": 7
+                    },
+                    "visibility": "public",
+                    "anchor": {
+                      "side": "white",
+                      "boundary": "end",
+                      "ordinal": 1
+                    },
+                    "deadline": {
+                      "side": "white",
+                      "boundary": "end",
+                      "ordinal": 4
+                    }
+                  }
+                ]
+              },
+              "regionId": "pre-c1-sanctuary:operation:2",
+              "source": {
+                "sourcePlayer": "white",
+                "sourceVariant": "guardian",
+                "sourceSkill": "guardian.sanctuary",
+                "sourcePiece": null,
+                "sourceIncarnation": null
+              },
+              "outcome": "stun-applied"
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "black"
+          },
+          "command": {
+            "kind": "end"
+          }
+        },
+        "stateHash": "bb1126157bbafaba",
+        "events": [
+          {
+            "id": "pre-c1-sanctuary:event:13",
+            "transactionId": "pre-c1-sanctuary:transaction:4",
+            "causeId": "pre-c1-sanctuary:operation:6",
+            "sequence": 13,
+            "visibility": "internal",
+            "kind": "turn_ended",
+            "payload": {
+              "side": "black",
+              "plyIndex": 1,
+              "roundIndex": 1,
+              "kind": "turnEnd"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:14",
+            "transactionId": "pre-c1-sanctuary:transaction:4",
+            "causeId": "pre-c1-sanctuary:operation:6",
+            "sequence": 14,
+            "visibility": "internal",
+            "kind": "turn_started",
+            "payload": {
+              "side": "white",
+              "plyIndex": 2,
+              "roundIndex": 2,
+              "kind": "turnStart"
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "white"
+          },
+          "command": {
+            "kind": "move",
+            "pieceId": "wk",
+            "to": {
+              "file": 0,
+              "rankIndex": 2
+            }
+          }
+        },
+        "stateHash": "d8e964d693fd4214",
+        "events": [
+          {
+            "id": "pre-c1-sanctuary:event:15",
+            "transactionId": "pre-c1-sanctuary:transaction:5",
+            "causeId": "pre-c1-sanctuary:operation:7",
+            "sequence": 15,
+            "visibility": "internal",
+            "kind": "move_committed",
+            "payload": {
+              "pieceId": "wk",
+              "from": {
+                "file": 0,
+                "rankIndex": 1
+              },
+              "to": {
+                "file": 0,
+                "rankIndex": 2
+              },
+              "controller": "white",
+              "owner": "white"
+            }
+          }
+        ]
+      },
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "white"
+          },
+          "command": {
+            "kind": "end"
+          }
+        },
+        "stateHash": "d7dd0dc8d223205a",
+        "events": [
+          {
+            "id": "pre-c1-sanctuary:event:16",
+            "transactionId": "pre-c1-sanctuary:transaction:6",
+            "causeId": "pre-c1-sanctuary:operation:8",
+            "sequence": 16,
+            "visibility": "internal",
+            "kind": "turn_ended",
+            "payload": {
+              "side": "white",
+              "plyIndex": 2,
+              "roundIndex": 2,
+              "kind": "turnEnd"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:17",
+            "transactionId": "pre-c1-sanctuary:transaction:6",
+            "causeId": "pre-c1-sanctuary:operation:9",
+            "sequence": 17,
+            "visibility": "internal",
+            "kind": "effect_removed",
+            "payload": {
+              "effectId": "pre-c1-sanctuary:operation:5",
+              "definitionId": "effect.stun",
+              "definitionVersion": "1.0.0",
+              "target": {
+                "kind": "piece",
+                "pieceId": "attacker"
+              },
+              "sourcePlayer": "white",
+              "sourceVariant": "guardian",
+              "sourceSkill": "guardian.sanctuary",
+              "sourcePiece": null,
+              "effectVisibility": "public",
+              "reason": "expired"
+            }
+          },
+          {
+            "id": "pre-c1-sanctuary:event:18",
+            "transactionId": "pre-c1-sanctuary:transaction:6",
+            "causeId": "pre-c1-sanctuary:operation:8",
+            "sequence": 18,
+            "visibility": "internal",
+            "kind": "turn_started",
+            "payload": {
+              "side": "black",
+              "plyIndex": 3,
+              "roundIndex": 2,
+              "kind": "turnStart"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

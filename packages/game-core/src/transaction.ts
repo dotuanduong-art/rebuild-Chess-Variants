@@ -17,6 +17,7 @@ import type {
   ForcedRepositionOperation,
   SanctuaryCastOperation,
   CommittedCaptureContext,
+  TransferenceOperation,
 } from '@variant-chess/shared-types';
 import {
   assertGameState,
@@ -79,8 +80,10 @@ import {
   SANCTUARY_REGION_NAMESPACE,
 } from './sanctuary-region.js';
 import { captureSanctuaryContext, sanctuaryStunApplication } from './committed-capture.js';
+import { preflightTransference } from './transference.js';
 
 export type DerivedOperation =
+  | TransferenceOperation
   | SanctuaryCastOperation
   | ForcedRepositionOperation
   | DelayedScheduleOperation
@@ -141,6 +144,8 @@ export interface SkillPlanningContext {
   readonly state: GameState;
   readonly actor: PlayerSide;
   readonly command: Extract<RootCommand, { kind: 'skill' }>;
+  /** C1 trusted immutable bundle, not client data. Older engines retain their original context. */
+  readonly ruleset?: RulesetBundle;
 }
 export type SkillDefinition =
   | SkillPlan
@@ -166,6 +171,12 @@ export function resolveCommand(
   const parsed = TrustedInputSchema.safeParse(raw);
   if (!parsed.success) return rejected('INVALID_COMMAND');
   if (
+    state.engineVersion !== '0.8.0' &&
+    parsed.data.command.kind === 'skill' &&
+    parsed.data.command.intent?.kind === 'two-piece-target-v1'
+  )
+    return rejected('INVALID_COMMAND');
+  if (
     state.engineVersion === '0.6.0' &&
     parsed.data.command.kind === 'skill' &&
     parsed.data.command.intent?.kind === 'cell-target-v1'
@@ -180,6 +191,17 @@ export function resolveCommand(
   if (state.terminal.status !== 'ongoing') return rejected('TERMINAL');
   if (state.rulesetHash !== ruleset.hash || state.rulesetVersion !== ruleset.version)
     return rejected('RULESET_MISMATCH');
+  if (state.engineVersion === '0.8.0') {
+    const skill = ruleset.skills?.['turtle.transference'];
+    if (
+      Object.keys(ruleset.skills ?? {}).length !== 1 ||
+      !skill ||
+      !('plan' in skill) ||
+      skill.requiredProfile.id !== 'turtle.transference-only.experimental' ||
+      skill.requiredProfile.version !== '1.0.0'
+    )
+      return rejected('INVALID_TRANSFERENCE_RULESET');
+  }
   const runtime = ruleset.effectRuntime;
   const delayedRegistry = ruleset.delayedRegistry;
   if ((state.delayedActions.length && !delayedRegistry) || (state.effects.length && !runtime))
@@ -251,6 +273,7 @@ export function resolveCommand(
     let started = false;
     let repositioned = false;
     let sanctuaryCast = false;
+    let transferenceSwapped = false;
     let turnCauseId = transactionId;
     let steps = 0;
     let cursor = 0;
@@ -586,6 +609,23 @@ export function resolveCommand(
         }
         continue;
       }
+      if (operation.kind === 'transference_swap') {
+        if (transferenceSwapped) throw new Error('TRANSFERENCE_SWAP_LIMIT');
+        const plan = preflightTransference(candidate, actor, command, ruleset, operation);
+        transferenceSwapped = true;
+        candidate.effects = plan.records;
+        for (const fact of plan.facts) emit(fact.kind, fact.payload, item.id);
+        emit(
+          'transference_committed',
+          {
+            source: plan.operation.source,
+            pieceA: plan.operation.pieceA,
+            pieceB: plan.operation.pieceB,
+          },
+          item.id,
+        );
+        continue;
+      }
       if (operation.kind === 'effect_relocate' || operation.kind === 'effect_sets_swap') {
         if (!runtime) throw new Error('UNSUPPORTED_RUNTIME');
         const plan = planEffectRelocation(candidate, operation, runtime, !!ruleset.repetition);
@@ -686,12 +726,26 @@ export function resolveCommand(
             profile.version !== skill.requiredProfile.version
           )
             throw new Error('UNAUTHORIZED_VARIANT');
+          const context = deepFreeze({
+            state: cloneData(candidate),
+            actor,
+            command: cloneData(operation),
+          });
           plan = skill.plan(
-            deepFreeze({ state: cloneData(candidate), actor, command: cloneData(operation) }),
+            candidate.engineVersion === '0.8.0' ? Object.freeze({ ...context, ruleset }) : context,
           );
         } else {
           if (operation.intent) throw new Error('INVALID_SKILL_INTENT');
           plan = skill;
+        }
+        if (operation.skillId === 'turtle.transference') {
+          if (
+            plan.cost !== ruleset.transference?.cost ||
+            plan.operations.length !== 1 ||
+            plan.operations[0]?.kind !== 'transference_swap'
+          )
+            throw new Error('INVALID_TRANSFERENCE_PLAN');
+          preflightTransference(candidate, actor, operation, ruleset, plan.operations[0]);
         }
         result = commitNormalSkillUsage(basePosition(), actor, plan.cost);
         if (result.ok) for (const derived of plan.operations) enqueue(derived, item.id);

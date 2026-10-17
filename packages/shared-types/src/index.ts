@@ -117,6 +117,7 @@ const SafeCountSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 export const ENGINE_VERSION = '0.6.0' as const;
 // B3 is an explicit execution opt-in. Existing factories/archives retain ENGINE_VERSION.
 export const SANCTUARY_ENGINE_VERSION = '0.7.0' as const;
+export const TRANSFERENCE_ENGINE_VERSION = '0.8.0' as const;
 export const STATE_SCHEMA_VERSION = '1.1.0' as const;
 export const RNG_ALGORITHM_VERSION = 'xorshift32-v1' as const;
 export const TurnStateSchema = z.strictObject({
@@ -483,6 +484,22 @@ export const EffectSetSwapOperationSchema = z.strictObject({
 export type EffectRelocationOperation = z.infer<typeof EffectRelocationOperationSchema>;
 export type EffectSetSwapOperation = z.infer<typeof EffectSetSwapOperationSchema>;
 
+export const TransferenceSourceSchema = z.strictObject({
+  sourcePlayer: PlayerSideSchema,
+  sourceVariant: z.literal('turtle'),
+  sourceSkill: z.literal('turtle.transference'),
+  sourcePiece: z.null(),
+  sourceIncarnation: z.null(),
+});
+export const TransferenceOperationSchema = z.strictObject({
+  kind: z.literal('transference_swap'),
+  schemaVersion: z.literal('1.0.0'),
+  source: TransferenceSourceSchema,
+  pieceA: PieceIdSchema,
+  pieceB: PieceIdSchema,
+});
+export type TransferenceOperation = z.infer<typeof TransferenceOperationSchema>;
+
 export const DelayedActionDefinitionMetadataSchema = z.strictObject({
   typeId: IdentifierSchema,
   schemaVersion: VersionIdentifierSchema,
@@ -551,7 +568,7 @@ export type PlayerProfiles = z.infer<typeof PlayerProfilesSchema>;
 export const GameStateSchema = z
   .strictObject({
     matchId: MatchIdSchema,
-    engineVersion: z.enum([ENGINE_VERSION, SANCTUARY_ENGINE_VERSION]),
+    engineVersion: z.enum([ENGINE_VERSION, SANCTUARY_ENGINE_VERSION, TRANSFERENCE_ENGINE_VERSION]),
     schemaVersion: z.literal(STATE_SCHEMA_VERSION),
     rulesetVersion: VersionIdentifierSchema,
     rulesetHash: IdentifierSchema,
@@ -606,6 +623,11 @@ export const RootCommandSchema = z.discriminatedUnion('kind', [
       .discriminatedUnion('kind', [
         z.strictObject({ kind: z.literal('piece-target-v1'), pieceId: PieceIdSchema }),
         z.strictObject({ kind: z.literal('cell-target-v1'), cell: CoordinateSchema }),
+        z.strictObject({
+          kind: z.literal('two-piece-target-v1'),
+          alliedPieceId: PieceIdSchema,
+          enemyPieceId: PieceIdSchema,
+        }),
       ])
       .optional(),
   }),
@@ -654,6 +676,14 @@ const EffectFactPayload = {
   effectVisibility: z.enum(['public', 'source-player', 'internal']),
 };
 export const DomainEventSchema = z.discriminatedUnion('kind', [
+  typedEvent(
+    'transference_committed',
+    z.strictObject({
+      source: TransferenceSourceSchema,
+      pieceA: PieceIdSchema,
+      pieceB: PieceIdSchema,
+    }),
+  ),
   typedEvent('sanctuary_created', z.strictObject({ region: SanctuaryRegionSchema })),
   typedEvent(
     'sanctuary_removed',
@@ -812,7 +842,11 @@ export const ReplaySchema = z
     initialConfig: z.strictObject({
       matchId: MatchIdSchema,
       seed: z.number().int().min(1).max(0xffffffff),
-      engineVersion: z.enum([ENGINE_VERSION, SANCTUARY_ENGINE_VERSION]),
+      engineVersion: z.enum([
+        ENGINE_VERSION,
+        SANCTUARY_ENGINE_VERSION,
+        TRANSFERENCE_ENGINE_VERSION,
+      ]),
       schemaVersion: z.literal(STATE_SCHEMA_VERSION),
       rulesetVersion: VersionIdentifierSchema,
       rulesetHash: IdentifierSchema,

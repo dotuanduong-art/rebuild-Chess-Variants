@@ -1,6 +1,8 @@
 import { CONTRACT_SCHEMA_VERSION } from '@variant-chess/shared-types';
 
 export const CORE_API_VERSION = CONTRACT_SCHEMA_VERSION;
+export { preflightTransference } from './transference.js';
+export type { TransferencePolicy } from './transference.js';
 export {
   sanctuaryCells,
   querySanctuaryRegions,
