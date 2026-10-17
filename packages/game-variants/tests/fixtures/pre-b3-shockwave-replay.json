@@ -1,0 +1,97 @@
+{
+  "provenance": "TRUSTED_TEST_ONLY AP4 fixture captured from accepted B2 working tree before B3 production; HEAD ee85b71 plus27 B2 paths",
+  "archive": {
+    "format": "variant-chess-replay-v1",
+    "initialConfig": {
+      "matchId": "pre-b3-shockwave",
+      "seed": 17,
+      "engineVersion": "0.6.0",
+      "schemaVersion": "1.1.0",
+      "rulesetVersion": "1.0.0",
+      "rulesetHash": "experimental-dragon-sentinel-shockwave-v1-w1-b0",
+      "rngVersion": "xorshift32-v1"
+    },
+    "initialSnapshot": "{\"ap\":{\"black\":0,\"white\":4},\"board\":{\"cells\":[null,null,null,null,null,null,null,\"wk\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"center\",\"enemy\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"bk\",null,null,null,null,null,null,null],\"pieces\":{\"bk\":{\"baseType\":\"king\",\"controller\":\"black\",\"currentType\":\"king\",\"id\":\"bk\",\"origin\":\"ordinary-original\",\"originalSide\":\"black\",\"owner\":\"black\",\"position\":{\"file\":7,\"rankIndex\":14}},\"center\":{\"baseType\":\"rook\",\"controller\":\"white\",\"currentType\":\"rook\",\"id\":\"center\",\"origin\":\"ordinary-original\",\"originalSide\":\"white\",\"owner\":\"white\",\"position\":{\"file\":7,\"rankIndex\":7}},\"enemy\":{\"baseType\":\"rook\",\"controller\":\"black\",\"currentType\":\"rook\",\"id\":\"enemy\",\"origin\":\"ordinary-original\",\"originalSide\":\"black\",\"owner\":\"black\",\"position\":{\"file\":8,\"rankIndex\":7}},\"wk\":{\"baseType\":\"king\",\"controller\":\"white\",\"currentType\":\"king\",\"id\":\"wk\",\"origin\":\"ordinary-original\",\"originalSide\":\"white\",\"owner\":\"white\",\"position\":{\"file\":7,\"rankIndex\":0}}}},\"counters\":{\"event\":0,\"operation\":0,\"piece\":0,\"snapshot\":1,\"transaction\":0},\"delayedActions\":[],\"effects\":[],\"engineVersion\":\"0.6.0\",\"history\":{\"entries\":[{\"id\":\"pre-b3-shockwave:snapshot:1\",\"plyIndex\":0,\"positions\":{\"bk\":{\"file\":7,\"rankIndex\":14},\"center\":{\"file\":7,\"rankIndex\":7},\"enemy\":{\"file\":8,\"rankIndex\":7},\"wk\":{\"file\":7,\"rankIndex\":0}},\"reference\":\"{\\\"cells\\\":[null,null,null,null,null,null,null,\\\"wk\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"center\\\",\\\"enemy\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"bk\\\",null,null,null,null,null,null,null],\\\"pieces\\\":{\\\"bk\\\":{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"king\\\",\\\"id\\\":\\\"bk\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":14}},\\\"center\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"center\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":7}},\\\"enemy\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"enemy\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":8,\\\"rankIndex\\\":7}},\\\"wk\\\":{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"king\\\",\\\"id\\\":\\\"wk\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":0}}}}\",\"sequence\":0,\"side\":\"white\"}],\"lastCountedPly\":0,\"limit\":128,\"repetition\":{\"{\\\"ap\\\":{\\\"black\\\":0,\\\"white\\\":4},\\\"delayedActions\\\":[],\\\"effects\\\":[],\\\"pieces\\\":[{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"king\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":0}},{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":7}},{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":8,\\\"rankIndex\\\":7}},{\\\"baseType\\\":\\\"king\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"king\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":7,\\\"rankIndex\\\":14}}],\\\"playerProfiles\\\":{\\\"black\\\":null,\\\"white\\\":{\\\"id\\\":\\\"dragon-sentinel.shockwave-only.experimental\\\",\\\"version\\\":\\\"1.0.0\\\"}},\\\"sideToAct\\\":\\\"white\\\",\\\"variantState\\\":{\\\"black\\\":{},\\\"white\\\":{}}}\":1}},\"matchId\":\"pre-b3-shockwave\",\"playerProfiles\":{\"black\":null,\"white\":{\"id\":\"dragon-sentinel.shockwave-only.experimental\",\"version\":\"1.0.0\"}},\"rng\":{\"algorithm\":\"xorshift32-v1\",\"cursor\":0,\"seed\":17,\"value\":17},\"rulesetHash\":\"experimental-dragon-sentinel-shockwave-v1-w1-b0\",\"rulesetVersion\":\"1.0.0\",\"schemaVersion\":\"1.1.0\",\"terminal\":{\"status\":\"ongoing\"},\"turn\":{\"mainMoveUsed\":false,\"plyIndex\":0,\"roundIndex\":1,\"sideToAct\":\"white\",\"skillUsed\":false},\"variantState\":{\"black\":{},\"white\":{}}}",
+    "steps": [
+      {
+        "input": {
+          "authority": {
+            "kind": "player",
+            "side": "white"
+          },
+          "command": {
+            "kind": "skill",
+            "skillId": "dragon_sentinel.shockwave",
+            "intent": {
+              "kind": "piece-target-v1",
+              "pieceId": "center"
+            }
+          }
+        },
+        "stateHash": "0a5b65b9066d7829",
+        "events": [
+          {
+            "id": "pre-b3-shockwave:event:1",
+            "transactionId": "pre-b3-shockwave:transaction:1",
+            "causeId": "pre-b3-shockwave:operation:1",
+            "sequence": 1,
+            "visibility": "internal",
+            "kind": "skill_used",
+            "payload": {
+              "actor": "white",
+              "skillId": "dragon_sentinel.shockwave",
+              "actualCost": 4
+            }
+          },
+          {
+            "id": "pre-b3-shockwave:event:2",
+            "transactionId": "pre-b3-shockwave:transaction:1",
+            "causeId": "pre-b3-shockwave:operation:1",
+            "sequence": 2,
+            "visibility": "internal",
+            "kind": "ap_changed",
+            "payload": {
+              "side": "white",
+              "before": 4,
+              "after": 0
+            }
+          },
+          {
+            "id": "pre-b3-shockwave:event:3",
+            "transactionId": "pre-b3-shockwave:transaction:1",
+            "causeId": "pre-b3-shockwave:operation:2",
+            "sequence": 3,
+            "visibility": "internal",
+            "kind": "pieces_repositioned",
+            "payload": {
+              "cause": {
+                "kind": "shockwave-v1",
+                "source": {
+                  "sourcePlayer": "white",
+                  "sourceVariant": "dragon_sentinel",
+                  "sourceSkill": "dragon_sentinel.shockwave",
+                  "sourcePiece": null,
+                  "sourceIncarnation": null
+                }
+              },
+              "centerPieceId": "center",
+              "moves": [
+                {
+                  "pieceId": "enemy",
+                  "from": {
+                    "file": 8,
+                    "rankIndex": 7
+                  },
+                  "to": {
+                    "file": 9,
+                    "rankIndex": 7
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

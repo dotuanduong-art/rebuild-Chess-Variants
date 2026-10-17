@@ -1,5 +1,17 @@
 # Phase 02B batch roadmap — planning02B-7
 
+## Current B3 authorization — Guardian Sanctuary-only (2026-10-17)
+
+The owner explicitly approves B3-01…12 in [OPEN_DECISIONS](OPEN_DECISIONS.md#phase-02b-b3--guardian-sanctuary-owner-approvals-2026-10-17): public clipped3x3 fixed cell region/AP5/one per source/recastN3, ordinary committed-capture TriggerA generates independent source-end StunN1 on eligible living ordinary non-King attacker. Original victim controller and capture destination decide eligibility; King terminal and Shield cancellation suppress reactions; Bomb destruction never qualifies. Exact guardian/guardian.sanctuary/null/null source. Separate Sanctuary-only factory; no Holy Aura/Divine Shield/full or mixed Guardian.
+
+Implementation PASS / READY / ENABLED only for selected players in the separate pinned Sanctuary-only factory. All960 tests/46 files, required lint/typecheck/build/export/runtime/boundary/hygiene/diff checks and independent Standards/Spec reviews PASS. Evidence: [B3 acceptance report](PHASE_02B_B3_SANCTUARY_REPORT.md). Sanctuary pins engine0.7.0/state1.1.0; historical factories/archives keep engine0.6.0 and opaque namespace semantics. Preserve accepted B2 files/evidence and historical cost artifact; version and compatibility decisions are reviewed in the B3 registry entry/report. No stage/commit/push or B2-only checkpoint. Stop after B3 report; combined B2+B3 checkpoint awaits separate instruction.
+
+## Current B2 authorization — Shockwave and fixed AP configuration (2026-10-17)
+
+Eight scoped owner approvals and the central AP requirement are recorded in [OPEN_DECISIONS](OPEN_DECISIONS.md#phase-02b-b2--shockwave-approvals-and-cost-consolidation-2026-10-17). Shockwave-only dragon_sentinel profile, allied ordinary non-King center, adjacent enemy ordinary non-King radial pushes one cell; blocked bearers stay, independent movers succeed, simultaneous snapshot. No caster, King displacement, capture/death/promotion/AP reward, entry consumer or sibling. Pin dragon_sentinel.shockwave / dragon-sentinel.shockwave-only.experimental v1.0.0; separate opt-in factory only. Existing effects and source/deadline/identity are preserved. Costs4/3/5/6/4 become one immutable versioned approved configuration without changing the four accepted producer rulesets.
+
+Geometry proves destination2d (Chebyshev norm2) cannot occupy a mover's initial adjacent cell d (norm1); distinct directions have distinct destinations. No chain-push/general occupied-vacated policy is approved. Owner reply now APPROVES zero-displacement rejection with no AP/skill-slot debit (D-22.B2.ZERO_DISPLACEMENT). The gameplay gate is resolved; real Shockwave is PASS / READY / ENABLED only for selected players in its separate pinned factory after B2 acceptance:852 tests/41 files, all required checks and independent Standards/Spec reviews PASS. Evidence: [B2 acceptance report](PHASE_02B_B2_SHOCKWAVE_REPORT.md). Historical B1/planning evidence below stays intact; this authorization does not start B3/Phase03. No stage/commit/push.
+
 ## Current B1 authorization — two Stun producers (2026-10-16)
 
 The owner has APPROVED and authorized one batch implementing Judgment Chains-only Nephalem and Holy Seal-only Angel. Six scoped field groups and exact decision IDs are recorded in [OPEN_DECISIONS](OPEN_DECISIONS.md#phase-02b-b1--two-bounded-stun-producer-approvals-2026-10-16): scope, targets/relocation, cost/usage, duration/refresh, source and removal. Each casts one live enemy-current-controller ordinary-original non-King anywhere on the board, without range/path restriction; cost5/6 respectively, normal skill slot and mandatory main move; both apply empty-payload StunN3/source-end/no cast tick. Exact player/Variant/skill/null/null source; stable same-source refresh, independent sources. Relocation allows ordinary non-King destinations of either controller; control/owner changes do not invalidate the bearer. Only expiry/bearer death/terminal cleanup; no extra removal/reward/skill ban.
@@ -13,13 +25,13 @@ Gameplay APPROVED; implementation **PASS / READY / ENABLED only for selected pla
 
 ## 1. Milestone mapping and ranking
 
-The authoritative [IMPLEMENTATION_ROADMAP](IMPLEMENTATION_ROADMAP.md) keeps Phase02=Game Core/effects, Phase03=backend authority/persistence and Phase04=multiplayer3D slice. “02B-7” names this owner-requested planning extension within Phase02. B1/B2/B3 originated as planning references. B1 is now explicitly owner-authorized and accepted; B2/B3 remain unapproved proposals. No roadmap phase is advanced and no local3D implementation is authorized.
+The authoritative [IMPLEMENTATION_ROADMAP](IMPLEMENTATION_ROADMAP.md) keeps Phase02=Game Core/effects, Phase03=backend authority/persistence and Phase04=multiplayer3D slice. “02B-7” names this owner-requested planning extension within Phase02. B1/B2/B3 originated as planning references. B1 is now explicitly owner-authorized and accepted; B2 is now explicitly authorized under the current overlay; B3 is now explicitly authorized under the current overlay. No roadmap phase is advanced and no local3D implementation is authorized.
 
 | Rank | Candidate | Benefit / what it unlocks | Current reason to proceed or defer |
 |---|---|---|---|
 | 1 / B1 | Two bounded direct-Stun producers: V05.S1 Judgment Chains +V15.S1 Holy Seal; B1 pins nephalem.judgment_chains / angel.holy_seal | First real Stun producers; reuse source/producer-N/planner/legality/threat/turn/replay seams, one shared acceptance approach across two Variants | B1 approved and implemented under separate ordinary/null-caster factories; B1 acceptance PASS |
-| 2 / B2 | Forced-reposition foundation +V25.S2 Shockwave; runtime ID UNKNOWN | One explicit displacement/collision/cause contract reusable later by Fool, Wind Reversal, Shifting Peaks and Sailing's movement branch | New mechanic, MEDIUM relative scope for one-step push, broader interactions HIGH. Defer until D-08/D-12/D-22 center/King/collision/entry table is signed; no hidden traps or derived capture |
-| 3 / B3 | Public-region/capture-context foundation +V06.S2 Sanctuary; guardian.sanctuary is prior PROPOSED ID | Region geometry/lifetime/overlap and reviewed postcapture reaction reusable later by public terrain/law/beam designs, each with new approvals | HIGH complexity. Known3/1 numeric facts insufficient: placement/source/region category/overlap/capture eligibility/visibility/removal/cost missing. No hidden Landmine or universal region engine |
+| 2 / B2 | Forced-reposition foundation +V25.S2 dragon_sentinel.shockwave | One explicit displacement/collision/cause contract reusable later by Fool, Wind Reversal, Shifting Peaks and Sailing's movement branch | B2 gameplay and zero-move rejection approved; real isolated factory/root accepted PASS and enabled only for selected players; no hidden traps or derived capture |
+| 3 / B3 | Public Sanctuary/capture-context foundation +V06.S2 guardian.sanctuary | Bounded cell region and concrete committed TriggerA; later producers need separate approvals | B3-01…12 approved; acceptance PASS, selected separate factory only. No hidden Landmine, universal region engine or mixed Guardian |
 
 Avoid endless single-skill milestones by batching same-mechanism producers in B1. A single complex producer in B2/B3 earns a bounded reusable capability; it does not justify bundling unrelated mechanics.
 
@@ -36,7 +48,7 @@ Avoid endless single-skill milestones by batching same-mechanism producers in B1
 9. **Stop:** B1 answers and implementation authorization are now recorded above; stop after B1 acceptance/report. Historical entry gate: no code until mandatory answers and separate implementation authorization. Non-null caster/special units/custom removal/new priorities -> stop at that boundary/reclassify. Never enable half-specified producer or pretend full Nephalem/Angel. Report and stop after accepted batch.
 10. **Order:** decision freeze -> focused red/green shared producer tests -> real planners/registrations under isolated pins -> public acceptance + independent reviews -> full verification -> owner checkpoint. No fixed batch size imposed.
 
-## 3. B2 — one bounded medium-complexity mechanic
+## 3. B2 — approved radial mechanic (historical planning checklist retained)
 
 1. **Scope:** forced-reposition operation/preflight/cause transport and V25.S2 Shockwave only, exact skill ID TBD; complete normal main move remains separate.
 2. **Excluded:** Sentinel passive/Escape/Roar, teleports/portals, derived capture, hidden entry objects, Fool progress and Earth units. No general movement rewrite.
@@ -49,7 +61,7 @@ Avoid endless single-skill milestones by batching same-mechanism producers in B1
 9. **Stop:** no collision/King/entry approval, unsupported modifier/hidden state or request for derived capture -> stop; no teleport subsystem added to satisfy a test.
 10. **Order:** signed cause/collision contract -> one pure planner +root operation -> one Shockwave consumer/planner -> mirrored/rollback/public acceptance -> full checks/reviews/report, stop.
 
-## 4. B3 — high-impact public-region/capture mechanic
+## 4. B3 — approved public region (historical planning checklist retained)
 
 1. **Scope:** one approved public Sanctuary region producer/consumer, proposed guardian.sanctuary ID, regionN3 and generated StunN1 already confirmed. Reusable region records/queries only as necessary for this profile.
 2. **Excluded:** Landmine/stealth, all Guardian passives/Divine Shield, arbitrary terrain/path modifiers, overlapping-region general DSL, full capture/redirect/Fate/Phoenix matrix and global region index optimization.
@@ -99,4 +111,4 @@ APPROVED_AND_IMPLEMENTED denotes the exact cited consumer/contract behavior, inc
 
 Every implementation batch must retain accepted invariants, focused red/green public-root tests and independent oracles, all baseline tests, snapshot/semantic equivalence+negative pairs/exact replay, mirror/match isolation and failure rollback. Full implementation checks use actual repository scripts, not fictitious smoke/check aliases. Requirements and the scripts can be reviewed before the separately authorized milestone; none were run as new code regression proof here.
 
-**B1 is complete and PASS** under the current owner authorization. Next recommendation is the B2 owner decision gate in §3; no forced-reposition/ Shockwave implementation is authorized. B3 and Phase03/UI remain gated. No next batch starts automatically.
+B1 remains accepted. B2 is now authorized under the current overlay and stops after its report. B3 is explicitly authorized above. B3 acceptance/report is PASS; wait for a separate instruction to prepare the combined B2+B3 checkpoint; Phase03/UI and subsequent implementation remain gated. No next batch starts automatically.

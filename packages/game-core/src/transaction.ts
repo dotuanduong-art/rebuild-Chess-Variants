@@ -14,6 +14,9 @@ import type {
   DelayedScheduleOperation,
   DelayedCancelOperation,
   EffectSourceIdentity,
+  ForcedRepositionOperation,
+  SanctuaryCastOperation,
+  CommittedCaptureContext,
 } from '@variant-chess/shared-types';
 import {
   assertGameState,
@@ -67,8 +70,19 @@ import type { DelayedActionRegistry } from './delayed-actions.js';
 import { deathReactionInstances, planDeathReaction } from './committed-death.js';
 import type { CommittedDeathContext } from './committed-death.js';
 import { sourceOf } from './effect-parameters.js';
+import { applyForcedReposition } from './forced-reposition.js';
+import type { ForcedRepositionPolicy } from './forced-reposition.js';
+import {
+  planSanctuaryCast,
+  querySanctuaryRegions,
+  withoutSanctuaryRegion,
+  SANCTUARY_REGION_NAMESPACE,
+} from './sanctuary-region.js';
+import { captureSanctuaryContext, sanctuaryStunApplication } from './committed-capture.js';
 
 export type DerivedOperation =
+  | SanctuaryCastOperation
+  | ForcedRepositionOperation
   | DelayedScheduleOperation
   | DelayedCancelOperation
   | EffectApplication
@@ -107,6 +121,9 @@ export interface CaptureInterceptor {
     | { readonly kind: 'redirect'; readonly targetId: string };
 }
 export interface RulesetBundle extends RulesetIdentity {
+  readonly forcedReposition?: ForcedRepositionPolicy;
+  /** Declared mandatory entry consumers have no approved B2 cause policy yet. */
+  readonly mandatoryEntryConsumers?: readonly string[];
   readonly legalityPolicies?: readonly RulesetLegalityPolicy[];
   readonly delayedRegistry?: DelayedActionRegistry;
   readonly effectRegistry?: EffectRegistry;
@@ -148,6 +165,12 @@ export function resolveCommand(
   const rejected = (code: string): TransactionResult => ({ ok: false, code, events: [] });
   const parsed = TrustedInputSchema.safeParse(raw);
   if (!parsed.success) return rejected('INVALID_COMMAND');
+  if (
+    state.engineVersion === '0.6.0' &&
+    parsed.data.command.kind === 'skill' &&
+    parsed.data.command.intent?.kind === 'cell-target-v1'
+  )
+    return rejected('INVALID_COMMAND');
   try {
     assertGameState(state);
     assertRulesetProfiles(state, ruleset);
@@ -211,6 +234,8 @@ export function resolveCommand(
         | RootCommand
         | DerivedOperation
         | { kind: 'death_reaction'; death: CommittedDeathContext; instance: EffectInstance }
+        | { kind: 'sanctuary_expire'; regionId: string; boundary: EffectBoundary }
+        | { kind: 'sanctuary_reaction'; capture: Readonly<CommittedCaptureContext> }
         | { kind: 'delayed_fire'; actionId: string; boundary: EffectBoundary }
         | {
             kind: 'effect_expire';
@@ -224,6 +249,8 @@ export function resolveCommand(
     const queue: QueueItem[] = [];
     const reactions = new Set<string>();
     let started = false;
+    let repositioned = false;
+    let sanctuaryCast = false;
     let turnCauseId = transactionId;
     let steps = 0;
     let cursor = 0;
@@ -250,6 +277,10 @@ export function resolveCommand(
       if ((operation.kind === 'effect_expire' || operation.kind === 'delayed_fire') && !scheduled)
         throw new Error('UNSUPPORTED_RUNTIME');
       if (operation.kind === 'death_reaction' && !scheduled) throw new Error('UNSUPPORTED_RUNTIME');
+      if (operation.kind === 'sanctuary_expire' && !scheduled)
+        throw new Error('UNSUPPORTED_RUNTIME');
+      if (operation.kind === 'sanctuary_reaction' && !scheduled)
+        throw new Error('UNSUPPORTED_RUNTIME');
       if (queue.length >= budget) throw new Error('RESOLUTION_LIMIT');
       queue.push({
         operation,
@@ -330,6 +361,17 @@ export function resolveCommand(
             effectBoundary,
           ))
             enqueue({ kind: 'delayed_fire', actionId, boundary: effectBoundary }, causeId, true);
+        for (const region of querySanctuaryRegions(candidate))
+          if (
+            region.deadline.side === effectBoundary.side &&
+            region.deadline.boundary === effectBoundary.boundary &&
+            region.deadline.ordinal <= effectBoundary.ordinal
+          )
+            enqueue(
+              { kind: 'sanctuary_expire', regionId: region.id, boundary: effectBoundary },
+              causeId,
+              true,
+            );
         if (pending.phase === 'end') {
           pending.phase = 'start';
           emit('turn_ended', { ...boundary, kind: 'turnEnd' }, causeId);
@@ -344,11 +386,44 @@ export function resolveCommand(
       }
       const item = queue[cursor++]!;
       let operation = item.operation;
+      let sanctuaryReaction: Readonly<CommittedCaptureContext> | undefined;
+      if (operation.kind === 'sanctuary_reaction') {
+        if (ruleset.sanctuary?.kind !== 'sanctuary-v1' || !runtime)
+          throw new Error('UNSUPPORTED_SANCTUARY');
+        const capture = operation.capture;
+        const region = capture.regions[0]!;
+        const application = sanctuaryStunApplication(candidate, capture);
+        if (!application) {
+          emit(
+            'sanctuary_reacted',
+            {
+              capture,
+              regionId: region.id,
+              source: region.source,
+              outcome: 'attacker-unavailable',
+            },
+            item.id,
+          );
+          continue;
+        }
+        sanctuaryReaction = capture;
+        operation = application;
+      }
       if (operation.kind === 'move') {
         const destination = operation.to;
         const attacker = getPiece(candidate.board, operation.pieceId);
         if (attacker && candidate.turn.mainMoveUsed) throw new Error('MAIN_MOVE_USED');
         let victim = getPieceAt(candidate.board, operation.to);
+        if (
+          victim &&
+          ruleset.sanctuary &&
+          querySanctuaryRegions(candidate).length &&
+          (interceptors.length ||
+            (ruleset.mandatoryEntryConsumers !== undefined &&
+              (!Array.isArray(ruleset.mandatoryEntryConsumers) ||
+                ruleset.mandatoryEntryConsumers.length)))
+        )
+          throw new Error('UNSUPPORTED_SANCTUARY_INTERACTION');
         if (attacker && attacker.controller === actor && victim)
           assertCandidateCaptureAllowed(candidate, attacker, victim, ruleset);
         if (
@@ -388,6 +463,44 @@ export function resolveCommand(
           }
       }
       if (operation.kind === 'fail') throw new Error(operation.code);
+      if (operation.kind === 'sanctuary_expire') {
+        const region = querySanctuaryRegions(candidate).find((r) => r.id === operation.regionId);
+        if (
+          region &&
+          region.deadline.side === operation.boundary.side &&
+          region.deadline.boundary === operation.boundary.boundary &&
+          region.deadline.ordinal <= operation.boundary.ordinal
+        ) {
+          candidate.variantState = withoutSanctuaryRegion(candidate, region.source.sourcePlayer);
+          emit('sanctuary_removed', { region, reason: 'expired' }, item.id);
+        }
+        continue;
+      }
+      if (operation.kind === 'sanctuary_cast') {
+        if (sanctuaryCast) throw new Error('SANCTUARY_CAST_LIMIT');
+        const plan = planSanctuaryCast(
+          candidate,
+          operation,
+          actor,
+          command,
+          ruleset.sanctuary,
+          item.id,
+        );
+        candidate.variantState = plan.variantState;
+        sanctuaryCast = true;
+        if (plan.previous)
+          emit('sanctuary_removed', { region: plan.previous, reason: 'replaced' }, item.id);
+        emit('sanctuary_created', { region: plan.region }, item.id);
+        continue;
+      }
+      if (operation.kind === 'forced_reposition') {
+        if (repositioned) throw new Error('FORCED_REPOSITION_LIMIT');
+        const plan = applyForcedReposition(candidate, operation, actor, command, ruleset);
+        candidate.board = plan.board as GameState['board'];
+        repositioned = true;
+        emit('pieces_repositioned', plan.payload, item.id);
+        continue;
+      }
       if (operation.kind === 'death_reaction') {
         if (!runtime) throw new Error('UNSUPPORTED_RUNTIME');
         const targets = planDeathReaction(candidate, operation.death, operation.instance, runtime);
@@ -492,6 +605,19 @@ export function resolveCommand(
         candidate.effects = plan.records;
         assertEffectRuntimeState(candidate, runtime, !!ruleset.repetition, false);
         for (const fact of plan.facts) emit(fact.kind, fact.payload, item.id, retired);
+        if (sanctuaryReaction) {
+          const region = sanctuaryReaction.regions[0]!;
+          emit(
+            'sanctuary_reacted',
+            {
+              capture: sanctuaryReaction,
+              regionId: region.id,
+              source: region.source,
+              outcome: 'stun-applied',
+            },
+            item.id,
+          );
+        }
         continue;
       }
       if (operation.kind === 'effect_remove' || operation.kind === 'effect_expire') {
@@ -510,6 +636,11 @@ export function resolveCommand(
         continue;
       }
       if (operation.kind === 'variant' || operation.kind === 'random') {
+        if (
+          candidate.engineVersion === '0.7.0' &&
+          operation.namespace === SANCTUARY_REGION_NAMESPACE
+        )
+          throw new Error('INVALID_SANCTUARY_MUTATION');
         const side = operation.side === 'actor' ? actor : operation.side;
         let value: SerializableValue;
         if (operation.kind === 'random') {
@@ -578,6 +709,11 @@ export function resolveCommand(
         : result.value.turn;
       const cleanup = runtime ? planEffectCleanup(before, candidate, runtime) : undefined;
       if (cleanup) candidate.effects = cleanup.records;
+      const terminalRegions =
+        candidate.terminal.status !== 'ongoing' ? querySanctuaryRegions(before) : [];
+      for (const region of terminalRegions) {
+        candidate.variantState = withoutSanctuaryRegion(candidate, region.source.sourcePlayer);
+      }
       if (result.boundaries.length)
         pending = {
           turn: result.value.turn,
@@ -663,6 +799,31 @@ export function resolveCommand(
             reactions.add(key);
             enqueue({ kind: 'death_reaction', death, instance }, deathEvent.id, true);
           }
+        if (
+          operation.kind === 'move' &&
+          deathEvent.kind === 'capture_committed' &&
+          candidate.terminal.status === 'ongoing' &&
+          ruleset.sanctuary
+        ) {
+          if (ruleset.sanctuary.kind !== 'sanctuary-v1') throw new Error('UNSUPPORTED_SANCTUARY');
+          const capture = captureSanctuaryContext(
+            candidate,
+            before.board.pieces[operation.pieceId]!,
+            victim,
+            deathEvent,
+            item.causeId,
+          );
+          if (capture.regions.length) {
+            const key = JSON.stringify([
+              'sanctuary-capture',
+              capture.eventId,
+              capture.regions[0]!.id,
+            ]);
+            if (reactions.has(key)) throw new Error('DUPLICATE_SANCTUARY_REACTION');
+            reactions.add(key);
+            enqueue({ kind: 'sanctuary_reaction', capture }, deathEvent.id, true);
+          }
+        }
       }
       if (operation.kind === 'skill')
         emit(
@@ -679,6 +840,8 @@ export function resolveCommand(
           before,
         );
       if (candidate.terminal.status !== 'ongoing') {
+        for (const region of terminalRegions)
+          emit('sanctuary_removed', { region, reason: 'match_terminal' }, item.id);
         emit('terminal_reached', { ...candidate.terminal }, item.id);
         break;
       }
@@ -690,6 +853,7 @@ export function resolveCommand(
           emit('piece_promoted', { pieceId: piece.id, controller: piece.controller }, item.id);
     }
     if (started && candidate.terminal.status === 'ongoing') {
+      const beforeCount = cloneData(candidate);
       const effectProjection = runtime
         ? runtimeRepetitionProjection(runtime, ruleset.repetition)
         : ruleset.repetition;
@@ -701,8 +865,18 @@ export function resolveCommand(
       );
       candidate.history = counted.history;
       candidate.terminal = counted.terminal;
-      if (candidate.terminal.status !== 'ongoing')
+      if (candidate.terminal.status !== 'ongoing') {
+        if (candidate.engineVersion === '0.7.0') {
+          const cleanup = runtime ? planEffectCleanup(beforeCount, candidate, runtime) : undefined;
+          if (cleanup) candidate.effects = cleanup.records;
+          for (const fact of cleanup?.facts ?? []) emit(fact.kind, fact.payload, turnCauseId);
+          for (const region of querySanctuaryRegions(beforeCount)) {
+            candidate.variantState = withoutSanctuaryRegion(candidate, region.source.sourcePlayer);
+            emit('sanctuary_removed', { region, reason: 'match_terminal' }, turnCauseId);
+          }
+        }
         emit('terminal_reached', { ...candidate.terminal }, turnCauseId);
+      }
     }
     const recorded = appendGameHistory(candidate);
     candidate.history = recorded.history;

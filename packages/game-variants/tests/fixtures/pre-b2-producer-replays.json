@@ -1,0 +1,333 @@
+{
+  "baselineCommit": "ee85b7121d6a97fb1c876baea95273d75d31c95b",
+  "archives": {
+    "guardian.holy_shield": {
+      "format": "variant-chess-replay-v1",
+      "initialConfig": {
+        "matchId": "pre-b2-guardian.holy_shield",
+        "seed": 19,
+        "engineVersion": "0.6.0",
+        "schemaVersion": "1.1.0",
+        "rulesetVersion": "1.0.0",
+        "rulesetHash": "experimental-guardian-holy-shield-v1-w1-b0",
+        "rngVersion": "xorshift32-v1"
+      },
+      "initialSnapshot": "{\"ap\":{\"black\":0,\"white\":4},\"board\":{\"cells\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"target\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\"pieces\":{\"target\":{\"baseType\":\"rook\",\"controller\":\"white\",\"currentType\":\"rook\",\"id\":\"target\",\"origin\":\"ordinary-original\",\"originalSide\":\"white\",\"owner\":\"white\",\"position\":{\"file\":0,\"rankIndex\":3}}}},\"counters\":{\"event\":0,\"operation\":0,\"piece\":0,\"snapshot\":1,\"transaction\":0},\"delayedActions\":[],\"effects\":[],\"engineVersion\":\"0.6.0\",\"history\":{\"entries\":[{\"id\":\"pre-b2-guardian.holy_shield:snapshot:1\",\"plyIndex\":0,\"positions\":{\"target\":{\"file\":0,\"rankIndex\":3}},\"reference\":\"{\\\"cells\\\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"target\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\\\"pieces\\\":{\\\"target\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"target\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}}}\",\"sequence\":0,\"side\":\"white\"}],\"lastCountedPly\":0,\"limit\":128,\"repetition\":{\"{\\\"ap\\\":{\\\"black\\\":0,\\\"white\\\":4},\\\"delayedActions\\\":[],\\\"effects\\\":[],\\\"pieces\\\":[{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}],\\\"playerProfiles\\\":{\\\"black\\\":null,\\\"white\\\":{\\\"id\\\":\\\"guardian.holy-shield-only.experimental\\\",\\\"version\\\":\\\"1.0.0\\\"}},\\\"sideToAct\\\":\\\"white\\\",\\\"variantState\\\":{\\\"black\\\":{},\\\"white\\\":{}}}\":1}},\"matchId\":\"pre-b2-guardian.holy_shield\",\"playerProfiles\":{\"black\":null,\"white\":{\"id\":\"guardian.holy-shield-only.experimental\",\"version\":\"1.0.0\"}},\"rng\":{\"algorithm\":\"xorshift32-v1\",\"cursor\":0,\"seed\":19,\"value\":19},\"rulesetHash\":\"experimental-guardian-holy-shield-v1-w1-b0\",\"rulesetVersion\":\"1.0.0\",\"schemaVersion\":\"1.1.0\",\"terminal\":{\"status\":\"ongoing\"},\"turn\":{\"mainMoveUsed\":false,\"plyIndex\":0,\"roundIndex\":1,\"sideToAct\":\"white\",\"skillUsed\":false},\"variantState\":{\"black\":{},\"white\":{}}}",
+      "steps": [
+        {
+          "input": {
+            "authority": {
+              "kind": "player",
+              "side": "white"
+            },
+            "command": {
+              "kind": "skill",
+              "skillId": "guardian.holy_shield",
+              "intent": {
+                "kind": "piece-target-v1",
+                "pieceId": "target"
+              }
+            }
+          },
+          "stateHash": "f065d2b18d0793c1",
+          "events": [
+            {
+              "id": "pre-b2-guardian.holy_shield:event:1",
+              "transactionId": "pre-b2-guardian.holy_shield:transaction:1",
+              "causeId": "pre-b2-guardian.holy_shield:operation:1",
+              "sequence": 1,
+              "visibility": "internal",
+              "kind": "skill_used",
+              "payload": {
+                "actor": "white",
+                "skillId": "guardian.holy_shield",
+                "actualCost": 4
+              }
+            },
+            {
+              "id": "pre-b2-guardian.holy_shield:event:2",
+              "transactionId": "pre-b2-guardian.holy_shield:transaction:1",
+              "causeId": "pre-b2-guardian.holy_shield:operation:1",
+              "sequence": 2,
+              "visibility": "internal",
+              "kind": "ap_changed",
+              "payload": {
+                "side": "white",
+                "before": 4,
+                "after": 0
+              }
+            },
+            {
+              "id": "pre-b2-guardian.holy_shield:event:3",
+              "transactionId": "pre-b2-guardian.holy_shield:transaction:1",
+              "causeId": "pre-b2-guardian.holy_shield:operation:2",
+              "sequence": 3,
+              "visibility": "internal",
+              "kind": "effect_applied",
+              "payload": {
+                "effectId": "pre-b2-guardian.holy_shield:operation:2",
+                "definitionId": "effect.shield",
+                "definitionVersion": "1.0.0",
+                "target": {
+                  "kind": "piece",
+                  "pieceId": "target"
+                },
+                "sourcePlayer": "white",
+                "sourceVariant": "guardian",
+                "sourceSkill": "guardian.holy_shield",
+                "sourcePiece": null,
+                "effectVisibility": "public"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "dynamite.live_charge": {
+      "format": "variant-chess-replay-v1",
+      "initialConfig": {
+        "matchId": "pre-b2-dynamite.live_charge",
+        "seed": 19,
+        "engineVersion": "0.6.0",
+        "schemaVersion": "1.1.0",
+        "rulesetVersion": "1.0.0",
+        "rulesetHash": "experimental-dynamite-live-charge-v1-w1-b0",
+        "rngVersion": "xorshift32-v1"
+      },
+      "initialSnapshot": "{\"ap\":{\"black\":0,\"white\":3},\"board\":{\"cells\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"target\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\"pieces\":{\"target\":{\"baseType\":\"rook\",\"controller\":\"white\",\"currentType\":\"rook\",\"id\":\"target\",\"origin\":\"ordinary-original\",\"originalSide\":\"white\",\"owner\":\"white\",\"position\":{\"file\":0,\"rankIndex\":3}}}},\"counters\":{\"event\":0,\"operation\":0,\"piece\":0,\"snapshot\":1,\"transaction\":0},\"delayedActions\":[],\"effects\":[],\"engineVersion\":\"0.6.0\",\"history\":{\"entries\":[{\"id\":\"pre-b2-dynamite.live_charge:snapshot:1\",\"plyIndex\":0,\"positions\":{\"target\":{\"file\":0,\"rankIndex\":3}},\"reference\":\"{\\\"cells\\\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"target\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\\\"pieces\\\":{\\\"target\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"target\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}}}\",\"sequence\":0,\"side\":\"white\"}],\"lastCountedPly\":0,\"limit\":128,\"repetition\":{\"{\\\"ap\\\":{\\\"black\\\":0,\\\"white\\\":3},\\\"delayedActions\\\":[],\\\"effects\\\":[],\\\"pieces\\\":[{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"white\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"white\\\",\\\"owner\\\":\\\"white\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}],\\\"playerProfiles\\\":{\\\"black\\\":null,\\\"white\\\":{\\\"id\\\":\\\"dynamite.live-charge-only.experimental\\\",\\\"version\\\":\\\"1.0.0\\\"}},\\\"sideToAct\\\":\\\"white\\\",\\\"variantState\\\":{\\\"black\\\":{},\\\"white\\\":{}}}\":1}},\"matchId\":\"pre-b2-dynamite.live_charge\",\"playerProfiles\":{\"black\":null,\"white\":{\"id\":\"dynamite.live-charge-only.experimental\",\"version\":\"1.0.0\"}},\"rng\":{\"algorithm\":\"xorshift32-v1\",\"cursor\":0,\"seed\":19,\"value\":19},\"rulesetHash\":\"experimental-dynamite-live-charge-v1-w1-b0\",\"rulesetVersion\":\"1.0.0\",\"schemaVersion\":\"1.1.0\",\"terminal\":{\"status\":\"ongoing\"},\"turn\":{\"mainMoveUsed\":false,\"plyIndex\":0,\"roundIndex\":1,\"sideToAct\":\"white\",\"skillUsed\":false},\"variantState\":{\"black\":{},\"white\":{}}}",
+      "steps": [
+        {
+          "input": {
+            "authority": {
+              "kind": "player",
+              "side": "white"
+            },
+            "command": {
+              "kind": "skill",
+              "skillId": "dynamite.live_charge",
+              "intent": {
+                "kind": "piece-target-v1",
+                "pieceId": "target"
+              }
+            }
+          },
+          "stateHash": "5178348f105bf077",
+          "events": [
+            {
+              "id": "pre-b2-dynamite.live_charge:event:1",
+              "transactionId": "pre-b2-dynamite.live_charge:transaction:1",
+              "causeId": "pre-b2-dynamite.live_charge:operation:1",
+              "sequence": 1,
+              "visibility": "internal",
+              "kind": "skill_used",
+              "payload": {
+                "actor": "white",
+                "skillId": "dynamite.live_charge",
+                "actualCost": 3
+              }
+            },
+            {
+              "id": "pre-b2-dynamite.live_charge:event:2",
+              "transactionId": "pre-b2-dynamite.live_charge:transaction:1",
+              "causeId": "pre-b2-dynamite.live_charge:operation:1",
+              "sequence": 2,
+              "visibility": "internal",
+              "kind": "ap_changed",
+              "payload": {
+                "side": "white",
+                "before": 3,
+                "after": 0
+              }
+            },
+            {
+              "id": "pre-b2-dynamite.live_charge:event:3",
+              "transactionId": "pre-b2-dynamite.live_charge:transaction:1",
+              "causeId": "pre-b2-dynamite.live_charge:operation:2",
+              "sequence": 3,
+              "visibility": "internal",
+              "kind": "effect_applied",
+              "payload": {
+                "effectId": "pre-b2-dynamite.live_charge:operation:2",
+                "definitionId": "effect.bomb.charge",
+                "definitionVersion": "1.0.0",
+                "target": {
+                  "kind": "piece",
+                  "pieceId": "target"
+                },
+                "sourcePlayer": "white",
+                "sourceVariant": "dynamite",
+                "sourceSkill": "dynamite.live_charge",
+                "sourcePiece": null,
+                "effectVisibility": "public"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "nephalem.judgment_chains": {
+      "format": "variant-chess-replay-v1",
+      "initialConfig": {
+        "matchId": "pre-b2-nephalem.judgment_chains",
+        "seed": 19,
+        "engineVersion": "0.6.0",
+        "schemaVersion": "1.1.0",
+        "rulesetVersion": "1.0.0",
+        "rulesetHash": "experimental-nephalem-judgment-chains-v1-w1-b0",
+        "rngVersion": "xorshift32-v1"
+      },
+      "initialSnapshot": "{\"ap\":{\"black\":0,\"white\":5},\"board\":{\"cells\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"target\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\"pieces\":{\"target\":{\"baseType\":\"rook\",\"controller\":\"black\",\"currentType\":\"rook\",\"id\":\"target\",\"origin\":\"ordinary-original\",\"originalSide\":\"black\",\"owner\":\"black\",\"position\":{\"file\":0,\"rankIndex\":3}}}},\"counters\":{\"event\":0,\"operation\":0,\"piece\":0,\"snapshot\":1,\"transaction\":0},\"delayedActions\":[],\"effects\":[],\"engineVersion\":\"0.6.0\",\"history\":{\"entries\":[{\"id\":\"pre-b2-nephalem.judgment_chains:snapshot:1\",\"plyIndex\":0,\"positions\":{\"target\":{\"file\":0,\"rankIndex\":3}},\"reference\":\"{\\\"cells\\\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"target\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\\\"pieces\\\":{\\\"target\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"target\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}}}\",\"sequence\":0,\"side\":\"white\"}],\"lastCountedPly\":0,\"limit\":128,\"repetition\":{\"{\\\"ap\\\":{\\\"black\\\":0,\\\"white\\\":5},\\\"delayedActions\\\":[],\\\"effects\\\":[],\\\"pieces\\\":[{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}],\\\"playerProfiles\\\":{\\\"black\\\":null,\\\"white\\\":{\\\"id\\\":\\\"nephalem.judgment-chains-only.experimental\\\",\\\"version\\\":\\\"1.0.0\\\"}},\\\"sideToAct\\\":\\\"white\\\",\\\"variantState\\\":{\\\"black\\\":{},\\\"white\\\":{}}}\":1}},\"matchId\":\"pre-b2-nephalem.judgment_chains\",\"playerProfiles\":{\"black\":null,\"white\":{\"id\":\"nephalem.judgment-chains-only.experimental\",\"version\":\"1.0.0\"}},\"rng\":{\"algorithm\":\"xorshift32-v1\",\"cursor\":0,\"seed\":19,\"value\":19},\"rulesetHash\":\"experimental-nephalem-judgment-chains-v1-w1-b0\",\"rulesetVersion\":\"1.0.0\",\"schemaVersion\":\"1.1.0\",\"terminal\":{\"status\":\"ongoing\"},\"turn\":{\"mainMoveUsed\":false,\"plyIndex\":0,\"roundIndex\":1,\"sideToAct\":\"white\",\"skillUsed\":false},\"variantState\":{\"black\":{},\"white\":{}}}",
+      "steps": [
+        {
+          "input": {
+            "authority": {
+              "kind": "player",
+              "side": "white"
+            },
+            "command": {
+              "kind": "skill",
+              "skillId": "nephalem.judgment_chains",
+              "intent": {
+                "kind": "piece-target-v1",
+                "pieceId": "target"
+              }
+            }
+          },
+          "stateHash": "97c83730fdc59ea5",
+          "events": [
+            {
+              "id": "pre-b2-nephalem.judgment_chains:event:1",
+              "transactionId": "pre-b2-nephalem.judgment_chains:transaction:1",
+              "causeId": "pre-b2-nephalem.judgment_chains:operation:1",
+              "sequence": 1,
+              "visibility": "internal",
+              "kind": "skill_used",
+              "payload": {
+                "actor": "white",
+                "skillId": "nephalem.judgment_chains",
+                "actualCost": 5
+              }
+            },
+            {
+              "id": "pre-b2-nephalem.judgment_chains:event:2",
+              "transactionId": "pre-b2-nephalem.judgment_chains:transaction:1",
+              "causeId": "pre-b2-nephalem.judgment_chains:operation:1",
+              "sequence": 2,
+              "visibility": "internal",
+              "kind": "ap_changed",
+              "payload": {
+                "side": "white",
+                "before": 5,
+                "after": 0
+              }
+            },
+            {
+              "id": "pre-b2-nephalem.judgment_chains:event:3",
+              "transactionId": "pre-b2-nephalem.judgment_chains:transaction:1",
+              "causeId": "pre-b2-nephalem.judgment_chains:operation:2",
+              "sequence": 3,
+              "visibility": "internal",
+              "kind": "effect_applied",
+              "payload": {
+                "effectId": "pre-b2-nephalem.judgment_chains:operation:2",
+                "definitionId": "effect.stun",
+                "definitionVersion": "1.0.0",
+                "target": {
+                  "kind": "piece",
+                  "pieceId": "target"
+                },
+                "sourcePlayer": "white",
+                "sourceVariant": "nephalem",
+                "sourceSkill": "nephalem.judgment_chains",
+                "sourcePiece": null,
+                "effectVisibility": "public"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "angel.holy_seal": {
+      "format": "variant-chess-replay-v1",
+      "initialConfig": {
+        "matchId": "pre-b2-angel.holy_seal",
+        "seed": 19,
+        "engineVersion": "0.6.0",
+        "schemaVersion": "1.1.0",
+        "rulesetVersion": "1.0.0",
+        "rulesetHash": "experimental-angel-holy-seal-v1-w1-b0",
+        "rngVersion": "xorshift32-v1"
+      },
+      "initialSnapshot": "{\"ap\":{\"black\":0,\"white\":6},\"board\":{\"cells\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\"target\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\"pieces\":{\"target\":{\"baseType\":\"rook\",\"controller\":\"black\",\"currentType\":\"rook\",\"id\":\"target\",\"origin\":\"ordinary-original\",\"originalSide\":\"black\",\"owner\":\"black\",\"position\":{\"file\":0,\"rankIndex\":3}}}},\"counters\":{\"event\":0,\"operation\":0,\"piece\":0,\"snapshot\":1,\"transaction\":0},\"delayedActions\":[],\"effects\":[],\"engineVersion\":\"0.6.0\",\"history\":{\"entries\":[{\"id\":\"pre-b2-angel.holy_seal:snapshot:1\",\"plyIndex\":0,\"positions\":{\"target\":{\"file\":0,\"rankIndex\":3}},\"reference\":\"{\\\"cells\\\":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,\\\"target\\\",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],\\\"pieces\\\":{\\\"target\\\":{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"id\\\":\\\"target\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}}}\",\"sequence\":0,\"side\":\"white\"}],\"lastCountedPly\":0,\"limit\":128,\"repetition\":{\"{\\\"ap\\\":{\\\"black\\\":0,\\\"white\\\":6},\\\"delayedActions\\\":[],\\\"effects\\\":[],\\\"pieces\\\":[{\\\"baseType\\\":\\\"rook\\\",\\\"controller\\\":\\\"black\\\",\\\"currentType\\\":\\\"rook\\\",\\\"origin\\\":\\\"ordinary-original\\\",\\\"originalSide\\\":\\\"black\\\",\\\"owner\\\":\\\"black\\\",\\\"position\\\":{\\\"file\\\":0,\\\"rankIndex\\\":3}}],\\\"playerProfiles\\\":{\\\"black\\\":null,\\\"white\\\":{\\\"id\\\":\\\"angel.holy-seal-only.experimental\\\",\\\"version\\\":\\\"1.0.0\\\"}},\\\"sideToAct\\\":\\\"white\\\",\\\"variantState\\\":{\\\"black\\\":{},\\\"white\\\":{}}}\":1}},\"matchId\":\"pre-b2-angel.holy_seal\",\"playerProfiles\":{\"black\":null,\"white\":{\"id\":\"angel.holy-seal-only.experimental\",\"version\":\"1.0.0\"}},\"rng\":{\"algorithm\":\"xorshift32-v1\",\"cursor\":0,\"seed\":19,\"value\":19},\"rulesetHash\":\"experimental-angel-holy-seal-v1-w1-b0\",\"rulesetVersion\":\"1.0.0\",\"schemaVersion\":\"1.1.0\",\"terminal\":{\"status\":\"ongoing\"},\"turn\":{\"mainMoveUsed\":false,\"plyIndex\":0,\"roundIndex\":1,\"sideToAct\":\"white\",\"skillUsed\":false},\"variantState\":{\"black\":{},\"white\":{}}}",
+      "steps": [
+        {
+          "input": {
+            "authority": {
+              "kind": "player",
+              "side": "white"
+            },
+            "command": {
+              "kind": "skill",
+              "skillId": "angel.holy_seal",
+              "intent": {
+                "kind": "piece-target-v1",
+                "pieceId": "target"
+              }
+            }
+          },
+          "stateHash": "a1e8d3f474fdc7cb",
+          "events": [
+            {
+              "id": "pre-b2-angel.holy_seal:event:1",
+              "transactionId": "pre-b2-angel.holy_seal:transaction:1",
+              "causeId": "pre-b2-angel.holy_seal:operation:1",
+              "sequence": 1,
+              "visibility": "internal",
+              "kind": "skill_used",
+              "payload": {
+                "actor": "white",
+                "skillId": "angel.holy_seal",
+                "actualCost": 6
+              }
+            },
+            {
+              "id": "pre-b2-angel.holy_seal:event:2",
+              "transactionId": "pre-b2-angel.holy_seal:transaction:1",
+              "causeId": "pre-b2-angel.holy_seal:operation:1",
+              "sequence": 2,
+              "visibility": "internal",
+              "kind": "ap_changed",
+              "payload": {
+                "side": "white",
+                "before": 6,
+                "after": 0
+              }
+            },
+            {
+              "id": "pre-b2-angel.holy_seal:event:3",
+              "transactionId": "pre-b2-angel.holy_seal:transaction:1",
+              "causeId": "pre-b2-angel.holy_seal:operation:2",
+              "sequence": 3,
+              "visibility": "internal",
+              "kind": "effect_applied",
+              "payload": {
+                "effectId": "pre-b2-angel.holy_seal:operation:2",
+                "definitionId": "effect.stun",
+                "definitionVersion": "1.0.0",
+                "target": {
+                  "kind": "piece",
+                  "pieceId": "target"
+                },
+                "sourcePlayer": "white",
+                "sourceVariant": "angel",
+                "sourceSkill": "angel.holy_seal",
+                "sourcePiece": null,
+                "effectVisibility": "public"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

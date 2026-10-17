@@ -1,3 +1,4 @@
+import { SKILL_AP_COSTS_V1 } from './config/skill-costs.js';
 import {
   createEffectRegistry,
   createEffectRuntime,
@@ -92,6 +93,8 @@ const definition: EffectDefinition = {
   payloadSchema: SHIELD_PAYLOAD_SCHEMA,
 };
 
+const cost = SKILL_AP_COSTS_V1['guardian.holy_shield'];
+
 /** Pure trusted planner: root owns debit, slots and execution of the returned operations. */
 function planHolyShield({ state, actor, command }: SkillPlanningContext): SkillPlan {
   if (actor !== state.turn.sideToAct) throw new Error('WRONG_TURN');
@@ -103,7 +106,7 @@ function planHolyShield({ state, actor, command }: SkillPlanningContext): SkillP
     throw new Error('UNAUTHORIZED_VARIANT');
   if (command.skillId !== 'guardian.holy_shield') throw new Error('NOT_AVAILABLE');
   if (state.turn.skillUsed) throw new Error('SKILL_USED');
-  if (state.ap[actor] < 4) throw new Error('INSUFFICIENT_AP');
+  if (state.ap[actor] < cost) throw new Error('INSUFFICIENT_AP');
   if (command.intent?.kind !== 'piece-target-v1') throw new Error('INVALID_SKILL_INTENT');
   const target = Object.hasOwn(state.board.pieces, command.intent.pieceId)
     ? state.board.pieces[command.intent.pieceId]
@@ -112,7 +115,7 @@ function planHolyShield({ state, actor, command }: SkillPlanningContext): SkillP
   if (target.controller !== actor) throw new Error('NOT_CONTROLLED');
   if (target.origin !== 'ordinary-original') throw new Error('UNSUPPORTED_UNIT');
   return {
-    cost: 4,
+    cost,
     operations: [
       {
         kind: 'effect_apply',

@@ -1,3 +1,4 @@
+import { SKILL_AP_COSTS_V1 } from './config/skill-costs.js';
 import {
   createEffectRegistry,
   createEffectRuntime,
@@ -26,14 +27,14 @@ const chains = Object.freeze({
   variant: 'nephalem',
   skill: 'nephalem.judgment_chains',
   producer: 'nephalem.judgment-chains',
-  cost: 5,
+  cost: SKILL_AP_COSTS_V1['nephalem.judgment_chains'],
   profile: JUDGMENT_CHAINS_EXPERIMENTAL_PROFILE,
 });
 const seal = Object.freeze({
   variant: 'angel',
   skill: 'angel.holy_seal',
   producer: 'angel.holy-seal',
-  cost: 6,
+  cost: SKILL_AP_COSTS_V1['angel.holy_seal'],
   profile: HOLY_SEAL_EXPERIMENTAL_PROFILE,
 });
 

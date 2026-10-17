@@ -115,6 +115,8 @@ const SafeCountSchema = z.number().int().min(0).max(Number.MAX_SAFE_INTEGER);
 // 02B-5C pins targeted skill execution, persistent player profiles and piece provenance semantics.
 // Older archives must use their pinned engine rather than silently changing simulation.
 export const ENGINE_VERSION = '0.6.0' as const;
+// B3 is an explicit execution opt-in. Existing factories/archives retain ENGINE_VERSION.
+export const SANCTUARY_ENGINE_VERSION = '0.7.0' as const;
 export const STATE_SCHEMA_VERSION = '1.1.0' as const;
 export const RNG_ALGORITHM_VERSION = 'xorshift32-v1' as const;
 export const TurnStateSchema = z.strictObject({
@@ -242,6 +244,72 @@ export const ProducerRoundsPolicySchema = z.strictObject({
     .min(1),
 });
 export type EffectSourceIdentity = z.infer<typeof EffectSourceIdentitySchema>;
+/** B2 opt-in internal operation; never accepted by RootCommandSchema. */
+export const ForcedRepositionCauseSchema = z.strictObject({
+  kind: z.literal('shockwave-v1'),
+  source: z.strictObject({
+    sourcePlayer: PlayerSideSchema,
+    sourceVariant: IdentifierSchema,
+    sourceSkill: IdentifierSchema,
+    sourcePiece: z.null(),
+    sourceIncarnation: z.null(),
+  }),
+});
+export const ForcedRepositionMoveSchema = z.strictObject({
+  pieceId: PieceIdSchema,
+  from: CoordinateSchema,
+  to: CoordinateSchema,
+});
+export const ForcedRepositionOperationSchema = z.strictObject({
+  kind: z.literal('forced_reposition'),
+  schemaVersion: z.literal('1.0.0'),
+  cause: ForcedRepositionCauseSchema,
+  centerPieceId: PieceIdSchema,
+  moves: z.array(ForcedRepositionMoveSchema).min(1).max(8),
+});
+export type ForcedRepositionMove = z.infer<typeof ForcedRepositionMoveSchema>;
+export type ForcedRepositionOperation = z.infer<typeof ForcedRepositionOperationSchema>;
+export const SanctuarySourceSchema = z.strictObject({
+  sourcePlayer: PlayerSideSchema,
+  sourceVariant: z.literal('guardian'),
+  sourceSkill: z.literal('guardian.sanctuary'),
+  sourcePiece: z.null(),
+  sourceIncarnation: z.null(),
+});
+export const SanctuaryRegionSchema = z.strictObject({
+  format: z.literal('sanctuary-region-v1'),
+  definitionId: z.literal('region.guardian.sanctuary'),
+  definitionVersion: z.literal('1.0.0'),
+  id: IdentifierSchema,
+  source: SanctuarySourceSchema,
+  center: CoordinateSchema,
+  visibility: z.literal('public'),
+  anchor: DeadlineSchema,
+  deadline: DeadlineSchema,
+});
+export const SanctuaryCastOperationSchema = z.strictObject({
+  kind: z.literal('sanctuary_cast'),
+  schemaVersion: z.literal('1.0.0'),
+  center: CoordinateSchema,
+});
+export type SanctuaryRegion = z.infer<typeof SanctuaryRegionSchema>;
+export type SanctuaryCastOperation = z.infer<typeof SanctuaryCastOperationSchema>;
+/** Immutable root transport built only after an ordinary capture commits. */
+export const CommittedCaptureContextSchema = z.strictObject({
+  kind: z.literal('ordinary-committed-capture-v1'),
+  transactionId: IdentifierSchema,
+  operationId: IdentifierSchema,
+  causeId: IdentifierSchema,
+  eventId: IdentifierSchema,
+  attackerId: PieceIdSchema,
+  capturingPlayer: PlayerSideSchema,
+  victimId: PieceIdSchema,
+  victimController: PlayerSideSchema,
+  destination: CoordinateSchema,
+  terminal: TerminalStateSchema,
+  regions: z.array(SanctuaryRegionSchema).max(1),
+});
+export type CommittedCaptureContext = z.infer<typeof CommittedCaptureContextSchema>;
 export type EffectDurationParameters = z.infer<typeof EffectDurationParametersSchema>;
 const StackingKeySchema = z.enum([
   'type-target',
@@ -483,7 +551,7 @@ export type PlayerProfiles = z.infer<typeof PlayerProfilesSchema>;
 export const GameStateSchema = z
   .strictObject({
     matchId: MatchIdSchema,
-    engineVersion: z.literal(ENGINE_VERSION),
+    engineVersion: z.enum([ENGINE_VERSION, SANCTUARY_ENGINE_VERSION]),
     schemaVersion: z.literal(STATE_SCHEMA_VERSION),
     rulesetVersion: VersionIdentifierSchema,
     rulesetHash: IdentifierSchema,
@@ -535,7 +603,10 @@ export const RootCommandSchema = z.discriminatedUnion('kind', [
     kind: z.literal('skill'),
     skillId: IdentifierSchema,
     intent: z
-      .strictObject({ kind: z.literal('piece-target-v1'), pieceId: PieceIdSchema })
+      .discriminatedUnion('kind', [
+        z.strictObject({ kind: z.literal('piece-target-v1'), pieceId: PieceIdSchema }),
+        z.strictObject({ kind: z.literal('cell-target-v1'), cell: CoordinateSchema }),
+      ])
       .optional(),
   }),
   z.strictObject({ kind: z.literal('end') }),
@@ -583,6 +654,31 @@ const EffectFactPayload = {
   effectVisibility: z.enum(['public', 'source-player', 'internal']),
 };
 export const DomainEventSchema = z.discriminatedUnion('kind', [
+  typedEvent('sanctuary_created', z.strictObject({ region: SanctuaryRegionSchema })),
+  typedEvent(
+    'sanctuary_removed',
+    z.strictObject({
+      region: SanctuaryRegionSchema,
+      reason: z.enum(['expired', 'replaced', 'match_terminal']),
+    }),
+  ),
+  typedEvent(
+    'sanctuary_reacted',
+    z.strictObject({
+      capture: CommittedCaptureContextSchema,
+      regionId: IdentifierSchema,
+      source: SanctuarySourceSchema,
+      outcome: z.enum(['stun-applied', 'attacker-unavailable']),
+    }),
+  ),
+  typedEvent(
+    'pieces_repositioned',
+    z.strictObject({
+      cause: ForcedRepositionCauseSchema,
+      centerPieceId: PieceIdSchema,
+      moves: z.array(ForcedRepositionMoveSchema).min(1).max(8),
+    }),
+  ),
   typedEvent(
     'delayed_action_scheduled',
     z.strictObject({
@@ -716,7 +812,7 @@ export const ReplaySchema = z
     initialConfig: z.strictObject({
       matchId: MatchIdSchema,
       seed: z.number().int().min(1).max(0xffffffff),
-      engineVersion: z.literal(ENGINE_VERSION),
+      engineVersion: z.enum([ENGINE_VERSION, SANCTUARY_ENGINE_VERSION]),
       schemaVersion: z.literal(STATE_SCHEMA_VERSION),
       rulesetVersion: VersionIdentifierSchema,
       rulesetHash: IdentifierSchema,

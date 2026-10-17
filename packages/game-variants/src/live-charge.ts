@@ -1,3 +1,4 @@
+import { SKILL_AP_COSTS_V1 } from './config/skill-costs.js';
 import {
   BOMB_CONSUMER_CONTRACTS,
   BOMB_PAYLOAD_SCHEMA,
@@ -74,6 +75,8 @@ const definition: EffectDefinition = {
   payloadSchema: BOMB_PAYLOAD_SCHEMA,
 };
 
+const cost = SKILL_AP_COSTS_V1['dynamite.live_charge'];
+
 /** Pure trusted plan; the existing root alone owns cost, slot and effect mutation. */
 export function planLiveCharge(
   { state, actor, command }: SkillPlanningContext,
@@ -88,7 +91,7 @@ export function planLiveCharge(
     throw new Error('UNAUTHORIZED_VARIANT');
   if (command.skillId !== 'dynamite.live_charge') throw new Error('NOT_AVAILABLE');
   if (state.turn.skillUsed) throw new Error('SKILL_USED');
-  if (state.ap[actor] < 3) throw new Error('INSUFFICIENT_AP');
+  if (state.ap[actor] < cost) throw new Error('INSUFFICIENT_AP');
   if (command.intent?.kind !== 'piece-target-v1') throw new Error('INVALID_SKILL_INTENT');
   const target = Object.hasOwn(state.board.pieces, command.intent.pieceId)
     ? state.board.pieces[command.intent.pieceId]
@@ -107,7 +110,7 @@ export function planLiveCharge(
   )
     throw new Error('TARGET_ALREADY_BOMBED');
   return {
-    cost: 3,
+    cost,
     operations: [
       {
         kind: 'effect_apply',

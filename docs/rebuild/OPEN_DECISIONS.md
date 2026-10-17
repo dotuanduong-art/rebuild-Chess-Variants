@@ -2,6 +2,64 @@
 
 Ngày 2026-10-13. Chủ dự án quyết gameplay; architect tìm bằng chứng và đưa phương án. Recommendation chưa được trả lời **không phải** luật. Spec/architecture viết xong không tự duyệt Phase 01. Các decision IDs stable để fixtures/PR tương lai truy vết.
 
+## Phase 02B B3 — Guardian Sanctuary owner approvals (2026-10-17)
+
+Owner explicitly authorizes B3 only on the accepted uncommitted B2 baseline (HEAD/origin/main ee85b7121d6a97fb1c876baea95273d75d31c95b;27 B2 paths;852 tests/41 files). Preserve B2. No stage/commit/push, no B2-only checkpoint; a combined B2+B3 checkpoint requires a subsequent owner instruction. Gameplay approval is separate from technical acceptance; At authorization Sanctuary was DISABLED pending acceptance; the acceptance entry below records the final result.
+
+| Scoped decision | APPROVED owner answer |
+|---|---|
+| D-22.B3-01.SCOPE | Guardian Sanctuary-only, separate factory from Holy Shield; no Holy Aura/Divine Shield/full Guardian/mixed factory or dependent abilities |
+| D-22.B3-02.PLACEMENT | Exactly one valid board cell; unlimited distance; occupied center including King allowed; no caster; fixed region does not follow pieces |
+| D-22.B3-03.GEOMETRY | Public to both players; fixed3x3 centered square clipped to15x15 bounds, no wrap |
+| D-22.B3-04.COST | Fixed5 AP from central config, one normal skill slot, mandatory main move unchanged; no discounts/refunds/passives |
+| D-22.B3-05.RECAST | One active region per source player; recast replaces only that source's old region and resets N3/new center; both sources may overlap |
+| D-04.B3-06.TRIGGER_A | Only ordinary committed capture by source's opponent of a victim controlled by source immediately before death, at a destination in region; attacker may start outside; living ordinary-original non-King attacker revalidated at reaction application receives StunN1 |
+| D-04.B3-07.KING | King victim may be protected; King attacker excluded from generated Stun; committed King capture terminal wins immediately/stops reactions, no new global King immunity/check rules |
+| D-05.B3-08.SOURCE_LIFETIME | Exact original source player/guardian/guardian.sanctuary/null/null; regionN3 and generated StunN1 independently source-end/no creation-boundary tick; empty Stun payload, exact-source refresh/cross-source independence |
+| D-06.B3-09.REMOVAL | Region expiry/recast/terminal only; generated Stun independent expiry/bearer death/terminal only; no cleanse/dispel/source-invalidated/parent cleanup or rewards; region removal never deletes Stun |
+| D-04.B3-10.SHIELD | Shield-canceled capture rejects atomically, no death/AP/slot/Stun; interception unchanged |
+| D-12.B3-11.BOMB | Bomb/derived destruction never qualifies as capture; original Bomb source/FIFO preserved; King terminal suppresses remaining queued work |
+| D-05.B3-12.OVERLAP | Deterministic at most once per eligible region/capture; original source identity, not region ID; same-source refresh/cross-source independence; no unrestricted multi-region stack engine |
+
+Authorized TDD seams from the owner's acceptance matrix: exported root/factory/planner, cell intent, public region records/membership, effect records/legality/threat, snapshot/repetition/replay/version/cost artifacts and labeled trusted composition/fault fixtures. No separate seam approval is needed for those explicit requirements. Record this approval before tests/production.
+
+Technical plan for review: guardian.sanctuary; guardian.sanctuary-only.experimental v1.0.0; region.guardian.sanctuary v1.0.0 / sanctuary-region-v1; guardian.sanctuary.stun producer v1.0.0. Root allocates a new region operation ID on each cast/replacement; source tuple stays stable. Typed region occupies the reserved per-player variantState namespace guardian.sanctuary (not effects); strict record/identity/source/deadline/visibility validation at root and codec only under the explicit0.7 capability. Historical0.6 keeps its prior opaque JSON namespace semantics and never recognizes it as Sanctuary. No new top-level serialized field: state1.1.0 retained after review; new region/cell/concrete reaction execution explicitly pins engine0.7.0 for the Sanctuary ruleset. Existing factories remain on exact engine0.6.0/state1.1.0; no migration/latest reinterpretation. CostV1 stays byte-identical; append immutable composed CostV2 with Sanctuary5 and a new diagnostic fingerprint/ruleset identity.
+
+Integration plan: preserve current capture defense/base commit/terminal/Bomb queue order. After existing committed-death tickets, append a bounded Sanctuary reaction ticket using an immutable committed-capture context, snapshotting region source/center and victim controller at actual commit. Existing FIFO expansion remains unchanged; revalidate the attacker alive/origin/non-King when applying the generated Stun atomically inside that ticket. Earlier queued destruction may remove it; absence is an explicit no-application outcome. No arbitrary capture handler/priority API. Unknown capture interceptors when relevant fail closed. Reviews must verify this exact order, rollback and compatibility.
+
+Overlap proof: TriggerA fixes region source as the unique opposite of the capturing player and as victim's current controller. With two players and at most one region/source, at most one region can qualify for a capture even when both geometric regions overlap. Cross-source Stun coexistence is tested through separately committed captures/controller-change trusted states, not impossible double-trigger states.
+
+**B3 acceptance (2026-10-17): PASS / READY / ENABLED only for selected players in the separate pinned Sanctuary-only factory.** All960 tests/46 files, full required verification and independent Standards/Spec reviews PASS, including focused re-review of historical opaque namespace preservation. Engine0.7.0/state1.1.0 for Sanctuary; original five factories and genuine old archives retain0.6.0/state1.1.0 without migration. CostV1 unchanged; composed CostV2 pin e268dfc077cf52ff. No remaining B3 gameplay or verification blocker. [B3 report](PHASE_02B_B3_SANCTUARY_REPORT.md). No stage/commit/push. Wait for a subsequent combined B2+B3 checkpoint instruction.
+
+## Phase 02B B2 — Shockwave approvals and cost consolidation (2026-10-17)
+
+Owner authorizes only Batch B2 and fixed-skill AP configuration consolidation. Starting checkpoint HEAD/origin/main `ee85b71` was clean; B1 was committed before this session. Gameplay approval is separate from producer enablement. No stage/commit/push or B3/Phase03 in this milestone.
+
+| Scoped ID (B2 namespace; unrelated historical B2-01 economy clarification below is preserved) | APPROVED answer |
+|---|---|
+| D-22.B2-01.SCOPE | Explicit opt-in Dragon Sentinel Shockwave-only experimental profile; no passive, Escape, Roar, full Variant or other forced-movement producer/default registration |
+| D-22.B2-02.CENTER | Exactly one live current-controller allied ordinary-original non-King piece, selected via piece-target-v1; unrestricted range/no line of sight; center never moves |
+| D-22.B2-03.AFFECTED | Only live opponent-current-controller ordinary-original non-Kings in the eight adjacent cells; allies/Kings/special/summoned/unknown/outside units unaffected but remain obstacles |
+| D-08.B2-04.RADIAL | One cell outward: destination = bearer + sign(bearer-center), componentwise; no capture/destruction/damage/promotion/transformation |
+| D-08.B2-05.BLOCKED | Off-board or occupied invalid destination leaves that bearer stationary; independent valid pushes still succeed; no shortened/extended move |
+| D-08.B2-06.SIMULTANEOUS | One immutable pre-displacement snapshot; all shared-destination contenders stay; deterministic final assignment batch, no sequential gameplay facts |
+| D-06.B2-07.INTERACTIONS | No King center/displacement. Stun/Shield alone do not block forced displacement. Bomb attachment remains without death/explosion. Preserve identity/type/origin/owner/controller/effects/source/deadline; no capture/loss/reward/terminal from displacement. Unsupported mandatory entry/effect constraints fail closed |
+| D-22.B2-08.COST_SOURCE | Fixed4 AP/one normal skill slot/root-only debit; mandatory main move under P00-07/09. Invoking player/dragon_sentinel/dragon_sentinel.shockwave/null/null; center is a selected target, not a caster |
+
+Canonical Variant ID `dragon_sentinel` is already documented in VARIANT_PLUGIN_SPEC §3 / inventory V25. New technical skill pin `dragon_sentinel.shockwave`; profile `dragon-sentinel.shockwave-only.experimental` v1.0.0; ruleset `experimental-dragon-sentinel-shockwave-v1-w{0|1}-b{0|1}` v1.0.0; operation/cause closed `shockwave-v1`. No multi-profile factory.
+
+**D-08.B2-06 geometry result:** a neighbor offset d has components in {-1,0,1}, max norm1, d≠0. Its destination offset is2d, max norm2. Therefore it cannot coincide with any mover's original adjacent cell (norm1), or center (norm0). Map d→2d is injective, so shared destinations are also unreachable in this profile. Thus pre-snapshot occupied-vacated and conflict alternatives have identical outcomes here; this proves no general chain-push policy. Exhaustive board-center/direction geometry test is an engineering acceptance gate.
+
+**D-22.B2.ZERO_DISPLACEMENT APPROVED (owner reply 2026-10-17):** reject the entire cast with no AP/skill-slot debit when no piece can actually move, including no eligible adjacent enemies and all eligible enemies blocked. This is a new explicit Shockwave-only answer, not inferred from the producer-specific Live Charge duplicate rule. At authorization, producer enablement awaited complete acceptance; the final acceptance entry below now records the result.
+
+**D-22.B2.CENTRAL_AP_CONFIG APPROVED:** one dedicated typed runtime-immutable module for only approved fixed costs: guardian.holy_shield4, dynamite.live_charge3, nephalem.judgment_chains5, angel.holy_seal6, dragon_sentinel.shockwave4. Existing producers may replace inline cost literals only, retaining all gameplay and original ruleset/profile pins/archive behavior. No dynamic costs/passives/rewards/UI/storage. A versioned immutable cost artifact must be retained for old rulesets; a balance change requires a newly approved artifact and new ruleset identity, never editing historical values in place. Public cost/factory/root/snapshot/replay seams are authorized TDD boundaries.
+
+Public B2 test seams: typed operation/root commands, trusted planner/factory, board/query/effect records, source/cause event batch, snapshot/repetition/replay, cost configuration and clearly labeled unsupported-interaction/fault fixtures. Required full checks and independent Standards/Spec reviews precede acceptance. Parent decisions stay open outside these exact subsets.
+
+Technical compatibility plan: new opt-in forced-reposition operation/cause v1 and one simultaneous batch event, gated by an exact ruleset capability/profile/source and originating skill. Existing rulesets have no such capability. Retain engine0.6.0/state1.1.0/replay-v1 if old command/event streams remain byte-identical; four actual pre-B2 archives captured from ee85b71 must execute unchanged. The new ruleset pins the added executable semantics; no stored GameState field changes. AP artifact SKILL_AP_COSTS_V1 is immutable and protected by canonical FNV1a64 pin 2a56da8ff953d29b (diagnostic identity, not authentication); in-place balance edits fail closed. Future balancing must retain v1, add a new artifact and a new ruleset identity. This is not a historical archive service or arbitrary runtime balance override.
+
+**B2 acceptance (2026-10-17): PASS / READY / ENABLED only for selected players in the separate pinned Shockwave-only factory.** All852 tests/41 files, lint/typecheck/build/export/runtime smoke/boundaries/hygiene/diff checks and two independent reviews PASS. Four pre-B2 producer archives retain exact behavior under engine0.6.0/state1.1.0; the technical compatibility plan above is accepted. No remaining B2 gameplay/verification blocker. Evidence: [B2 report](PHASE_02B_B2_SHOCKWAVE_REPORT.md). No stage/commit/push or next milestone.
+
 ## Phase 02B B1 — two bounded Stun producer approvals (2026-10-16)
 
 Owner explicitly approves and authorizes one documentation-first implementation milestone containing both profiles below. These six field groups supersede only the corresponding B1 proposals/unknowns in planning02B-7. Gameplay is **APPROVED**; implementation/enablement is **PENDING acceptance / DISABLED** at this record. Parent D-04/05/06/08/12/22 remain OPEN/PARTIALLY_APPROVED outside these exact subsets. No commit/push or next batch.

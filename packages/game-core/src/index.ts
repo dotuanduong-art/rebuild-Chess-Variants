@@ -2,6 +2,13 @@ import { CONTRACT_SCHEMA_VERSION } from '@variant-chess/shared-types';
 
 export const CORE_API_VERSION = CONTRACT_SCHEMA_VERSION;
 export {
+  sanctuaryCells,
+  querySanctuaryRegions,
+  sanctuaryRepetitionProjection,
+} from './sanctuary-region.js';
+export { planRadialReposition } from './forced-reposition.js';
+export type { ForcedRepositionMove, ForcedRepositionPolicy } from './forced-reposition.js';
+export {
   BOMB_CONSUMER_CONTRACTS,
   BOMB_PAYLOAD_SCHEMA,
   BOMB_DEATH_REACTION_BINDINGS,
@@ -49,7 +56,11 @@ export type {
   DelayedRepetitionContext,
 } from './delayed-actions.js';
 export type { EffectTriggerContext, EffectTriggerHandler } from './effect-triggers.js';
-export { createEffectRuntime, collectDueEffects } from './effect-runtime.js';
+export {
+  createEffectRuntime,
+  collectDueEffects,
+  runtimeRepetitionProjection,
+} from './effect-runtime.js';
 export type {
   EffectRuntime,
   EffectRuntimeBindings,
@@ -82,7 +93,7 @@ export { recordReplay, executeReplay } from './replay.js';
 export type { RecordReplayResult } from './replay.js';
 export { repetitionKey, relativeDeadline } from './repetition.js';
 export type { RepetitionProjection } from './repetition.js';
-export { canonicalEncode } from './canonical.js';
+export { canonicalEncode, fingerprint } from './canonical.js';
 export { encodeSnapshot, decodeSnapshot, cloneSnapshot, fullStateHash } from './snapshot.js';
 export type { FullStateHash } from './snapshot.js';
 export { createGame, assertGameState, BASE_RULESET_ID, allocateGameId } from './state.js';

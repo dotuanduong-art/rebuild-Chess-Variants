@@ -9,9 +9,12 @@ import { canonicalEncode, deepFreeze } from './canonical.js';
 export { deepFreeze } from './canonical.js';
 import { recordActionReady } from './repetition.js';
 import type { RepetitionProjection } from './repetition.js';
+import { querySanctuaryRegions } from './sanctuary-region.js';
+import type { SanctuaryPolicy } from './sanctuary-region.js';
 
 export function assertGameState(state: GameState): void {
   GameStateSchema.parse(state);
+  querySanctuaryRegions(state);
   const seen = new Set<string>();
   state.board.cells.forEach((id, index) => {
     if (id === null) return;
@@ -80,6 +83,8 @@ export interface GameConfig {
   readonly historyLimit?: number;
 }
 export interface RulesetIdentity {
+  readonly engineVersion?: GameState['engineVersion'];
+  readonly sanctuary?: SanctuaryPolicy;
   readonly version: string;
   readonly hash: string;
   readonly playerProfiles?: Readonly<{
@@ -88,6 +93,16 @@ export interface RulesetIdentity {
   }>;
 }
 export function assertRulesetProfiles(state: GameState, ruleset: RulesetIdentity): void {
+  if (state.engineVersion !== (ruleset.engineVersion ?? ENGINE_VERSION))
+    throw new Error('ENGINE_MISMATCH');
+  if (
+    state.engineVersion === '0.7.0'
+      ? ruleset.sanctuary?.kind !== 'sanctuary-v1' ||
+        ruleset.sanctuary.requiredProfile.id !== 'guardian.sanctuary-only.experimental' ||
+        ruleset.sanctuary.requiredProfile.version !== '1.0.0'
+      : ruleset.sanctuary !== undefined
+  )
+    throw new Error('UNSUPPORTED_SANCTUARY');
   if (
     canonicalEncode(state.playerProfiles) !==
     canonicalEncode(ruleset.playerProfiles ?? { white: null, black: null })
@@ -139,7 +154,7 @@ export function createGame(
   const state = GameStateSchema.parse({
     ...base,
     matchId: config.matchId,
-    engineVersion: ENGINE_VERSION,
+    engineVersion: ruleset.engineVersion ?? ENGINE_VERSION,
     schemaVersion: STATE_SCHEMA_VERSION,
     rulesetVersion: ruleset.version,
     rulesetHash: ruleset.hash,
@@ -153,5 +168,6 @@ export function createGame(
   });
   const initial = appendGameHistory(recordActionReady(state, ruleset.repetition));
   assertGameState(initial);
+  assertRulesetProfiles(initial, ruleset);
   return deepFreeze(initial);
 }
